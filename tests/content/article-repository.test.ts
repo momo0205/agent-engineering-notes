@@ -27,6 +27,16 @@ tags:
 `;
 
 describe("article repository", () => {
+  it("loads deployable articles from sources bundled with the application", () => {
+    expect(allArticles().map(({ slug }) => slug)).toEqual([
+      "agent-llm-context-harness",
+      "bounded-agent-loop",
+      "java-to-agent",
+      "java-vs-python-worker",
+      "stance-misclassification",
+    ]);
+  });
+
   it("parses complete frontmatter and derives the slug from the filename", () => {
     const article = parseArticle("java-to-agent.md", source("published"));
 

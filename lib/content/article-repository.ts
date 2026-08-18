@@ -5,8 +5,7 @@ import {
   articleMetadataSchema,
   type Article,
 } from "./article-schema";
-
-const defaultArticlesRoot = path.join(process.cwd(), "content", "articles");
+import { bundledArticleSources } from "./article-sources";
 
 export function parseArticle(filename: string, source: string): Article {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(filename)) {
@@ -23,21 +22,32 @@ export function parseArticle(filename: string, source: string): Article {
   };
 }
 
-export function allArticles(root = defaultArticlesRoot): Article[] {
+function sortArticles(articles: Article[]): Article[] {
+  return articles.sort(
+    (left, right) =>
+      right.updatedAt.localeCompare(left.updatedAt) ||
+      left.slug.localeCompare(right.slug),
+  );
+}
+
+export function allArticles(root?: string): Article[] {
+  if (root === undefined) {
+    return sortArticles(
+      Object.entries(bundledArticleSources).map(([filename, source]) =>
+        parseArticle(filename, source),
+      ),
+    );
+  }
+
   if (!existsSync(root)) {
     return [];
   }
 
-  return readdirSync(root)
+  return sortArticles(readdirSync(root)
     .filter((filename) => filename.endsWith(".md"))
     .map((filename) =>
       parseArticle(filename, readFileSync(path.join(root, filename), "utf8")),
-    )
-    .sort(
-      (left, right) =>
-        right.updatedAt.localeCompare(left.updatedAt) ||
-        left.slug.localeCompare(right.slug),
-    );
+    ));
 }
 
 export function visibleArticles(articles = allArticles()): Article[] {

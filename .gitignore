@@ -1,9 +1,12 @@
 node_modules/
 .vinext/
 .vite/
+.next/
+.wrangler/
 dist/
 .env
 .env.*
 !.env.example
 .DS_Store
 coverage/
+*.tsbuildinfo

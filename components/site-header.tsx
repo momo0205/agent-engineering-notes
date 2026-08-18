@@ -8,7 +8,10 @@ export function SiteHeader() {
       </a>
       <nav aria-label="主导航">
         <a href="/">首页</a>
+        <a href="/journey">学习路径</a>
         <a href="/articles">文章</a>
+        <a href="/projects/agent-evidence-lab">项目</a>
+        <a href="/about">关于</a>
       </nav>
     </header>
   );

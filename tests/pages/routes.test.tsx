@@ -68,6 +68,9 @@ describe("skip navigation", () => {
     "app/page.tsx",
     "app/articles/page.tsx",
     "app/articles/[slug]/page.tsx",
+    "app/journey/page.tsx",
+    "app/projects/agent-evidence-lab/page.tsx",
+    "app/about/page.tsx",
   ])("provides the shared target on %s", (routeFile) => {
     const source = readFileSync(join(process.cwd(), routeFile), "utf8");
 

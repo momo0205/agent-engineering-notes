@@ -136,6 +136,20 @@ describe("public content secret scanner", () => {
     expect(scanText("The client secret should stay private.", "README.md")).toEqual([]);
   });
 
+  it.each([
+    "API_KEY=[REDACTED]actual-secret-value",
+    "CLIENT_SECRET=[REDACTED]-actual-secret-value",
+    'API_KEY="[REDACTED]actual-secret-value"',
+  ])("rejects a credential prefixed with redaction text %s", (text) => {
+    const findings = scanText(text, "content/config.md");
+    expect(findings).toHaveLength(1);
+    expect(JSON.stringify(findings)).not.toContain(text.split(/[=:]/, 2)[1]);
+  });
+
+  it("allows a quoted pure redaction", () => {
+    expect(scanText('API_KEY="[REDACTED]"', "content/config.md")).toEqual([]);
+  });
+
   it("returns only rule, repository-relative path and line", () => {
     const value = "sk-abcdefghijklmnopqrstuvwxyz123456";
     const [finding] = scanText(`safe\n${value}\n`, "content/guide.md");

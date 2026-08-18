@@ -29,7 +29,7 @@ const rules = [
   ["tunnel-token", /\b(?:cloudflared|tunnel)\b[^\n]*\s--token(?:=|\s+)(?!\[REDACTED\])[^\s#]+/i],
 ];
 
-const assignmentPattern = /(?:^|[\s`])([A-Za-z][A-Za-z0-9_-]*)\s*[:=]\s*(?:"([^"\r\n]*)"|'([^'\r\n]*)'|(\[[^\]\r\n]*\]|[^\s#`]+))/g;
+const assignmentPattern = /(?:^|[\s`])([A-Za-z][A-Za-z0-9_-]*)\s*[:=]\s*(?:"([^"\r\n]*)"|'([^'\r\n]*)'|([^\s#`]+))/g;
 const sensitiveKeySuffixes = [
   "api_key",
   "api-key",

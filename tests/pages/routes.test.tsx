@@ -74,6 +74,6 @@ describe("skip navigation", () => {
   ])("provides the shared target on %s", (routeFile) => {
     const source = readFileSync(join(process.cwd(), routeFile), "utf8");
 
-    expect(source).toContain('<main id="main-content">');
+    expect(source).toMatch(/<main\b[^>]*\bid="main-content"[^>]*>/);
   });
 });

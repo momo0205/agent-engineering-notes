@@ -17,4 +17,11 @@ npm run dev
 npm run verify
 ```
 
-该命令依次运行代码检查、TypeScript 类型检查和生产构建。
+该命令依次运行测试、敏感信息检查、站内链接检查和生产构建。
+
+额外的独立检查：
+
+```bash
+npm run lint
+npm run typecheck
+```

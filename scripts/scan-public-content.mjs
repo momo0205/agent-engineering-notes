@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { extname } from "node:path";
 
 const textExtensions = new Set([
@@ -19,6 +19,7 @@ const files = execFileSync("git", ["ls-files", "-co", "--exclude-standard"], {
 })
   .split("\n")
   .filter(Boolean)
+  .filter(existsSync)
   .filter((file) => !excludedFiles.has(file))
   .filter((file) => textExtensions.has(extname(file)) || file.endsWith(".env.example"));
 

@@ -20,7 +20,7 @@ const excludedNames = new Set([".git", "node_modules", "ai-instructure"]);
 const rules = [
   ["private-key", /-----BEGIN(?: [A-Z]+)? PRIVATE KEY-----/],
   ["openai-api-key", /\bsk-[A-Za-z0-9_-]{20,}\b/],
-  ["bearer-authorization", /\bAuthorization\s*:\s*Bearer\s+(?!\[REDACTED\])[A-Za-z0-9._~+/=-]{12,}/i],
+  ["bearer-authorization", /\b(?:Authorization\s*:\s*)?Bearer\s+(?!\[REDACTED\])[A-Za-z0-9._~+/=-]{20,}/i],
   ["postgresql-url", /\bpostgres(?:ql)?:\/\/(?!\[REDACTED\])[^\s"'<>]+/i],
   ["ipv4-address", /\b(?:\d{1,3}\.){3}\d{1,3}\b/],
   ["local-user-path", /(?:^|[\s"'(])\/Users\/[^\s"')]+/],

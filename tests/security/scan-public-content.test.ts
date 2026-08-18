@@ -23,6 +23,7 @@ describe("public content secret scanner", () => {
   it.each([
     ["OpenAI API key", "sk-abcdefghijklmnopqrstuvwxyz123456"],
     ["Bearer authorization", "Authorization: Bearer abcdefghijklmnopqrstuvwxyz"],
+    ["Bearer credential", "Bearer abcdefghijklmnopqrstuvwxyz123456"],
     ["private key", "-----BEGIN PRIVATE KEY-----"],
     ["PostgreSQL URL", "postgresql://admin:password@db.example.test/app"],
     ["IPv4 address", "server: 203.0.113.24"],
@@ -37,6 +38,7 @@ describe("public content secret scanner", () => {
   it("allows ordinary prose and explicit redactions", () => {
     const text = [
       "Agents can use bearer authentication in production.",
+      "Use Bearer token authentication.",
       "The service connects to a PostgreSQL database.",
       "API_KEY=[REDACTED]",
       "Authorization: Bearer [REDACTED]",

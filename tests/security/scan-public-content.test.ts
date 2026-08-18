@@ -58,6 +58,35 @@ describe("public content secret scanner", () => {
     expect(scanText(`API_KEY=[REDACTED] ${value}`, "README.md")).toHaveLength(1);
   });
 
+  it.each([
+    "API_KEY",
+    "OPENAI_API_KEY",
+    "SECRET_KEY",
+    "STRIPE_SECRET_KEY",
+    "SECRET",
+    "CLIENT_SECRET",
+    "TOKEN",
+    "DEPLOY_TOKEN",
+    "PASSWORD",
+    "DATABASE_PASSWORD",
+    "PASSWD",
+    "ADMIN_PASSWD",
+  ])("rejects sensitive env assignment name %s", (name) => {
+    const value = "abcdefghijklmnopqrstuvwxyz123456";
+    const findings = scanText(`${name}=${value}`, "content/example.md");
+    expect(findings).toHaveLength(1);
+    expect(JSON.stringify(findings)).not.toContain(value);
+  });
+
+  it.each([
+    "SECRET",
+    "CLIENT_SECRET",
+    "PASSWD",
+    "ADMIN_PASSWD",
+  ])("allows redacted sensitive assignment %s", (name) => {
+    expect(scanText(`${name}='[REDACTED]'`, "content/example.md")).toEqual([]);
+  });
+
   it("returns only rule, repository-relative path and line", () => {
     const value = "sk-abcdefghijklmnopqrstuvwxyz123456";
     const [finding] = scanText(`safe\n${value}\n`, "content/guide.md");

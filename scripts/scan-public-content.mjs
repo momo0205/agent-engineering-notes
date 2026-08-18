@@ -27,7 +27,7 @@ const rules = [
   ["local-user-path", /(?:^|[\s"'(])\/Users\/[^\s"')]+/],
   ["tunnel-token", /\b(?:TUNNEL_TOKEN|TUNNEL_AUTH_TOKEN)\s*=\s*(?!\[REDACTED\])[^\s#]+/i],
   ["tunnel-token", /\b(?:cloudflared|tunnel)\b[^\n]*\s--token(?:=|\s+)(?!\[REDACTED\])[^\s#]+/i],
-  ["dotenv-secret-assignment", /\b(?:[A-Z][A-Z0-9_]*_)?(?:API_KEY|SECRET_KEY|TOKEN|PASSWORD)\s*=\s*(?!["']?\[REDACTED\]["']?(?:\s|$))["']?(?!example\b|placeholder\b|changeme\b)[A-Za-z0-9_./+=:-]{12,}["']?/i],
+  ["dotenv-secret-assignment", /\b(?:[A-Z][A-Z0-9_]*_)?(?:API_KEY|SECRET_KEY|SECRET|TOKEN|PASSWORD|PASSWD)\s*=\s*(?!["']?\[REDACTED\]["']?(?:\s|$))["']?(?!example\b|placeholder\b|changeme\b)[A-Za-z0-9_./+=:-]{12,}["']?/i],
 ];
 
 function toPosix(path) {

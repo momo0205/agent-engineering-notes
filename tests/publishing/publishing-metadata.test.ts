@@ -44,6 +44,10 @@ vi.mock("../../lib/content/article-repository", () => ({
   allArticles: () => articles,
   visibleArticles: (input = articles) =>
     input.filter((article: Article) => article.status === "published"),
+  articleBySlug: (slug: string) =>
+    articles.find(
+      (article) => article.slug === slug && article.status === "published",
+    ),
 }));
 
 const originalSiteUrl = process.env.SITE_URL;
@@ -62,6 +66,11 @@ describe("canonical site URL", () => {
     "http://10.1.2.3",
     "http://172.16.4.2",
     "http://192.168.1.3",
+    "http://100.64.0.1",
+    "http://198.18.0.1",
+    "http://224.0.0.1",
+    "https://[2001:4860:4860::8888]",
+    "https://notes.example.com/base",
   ])("fails closed for unsafe SITE_URL %s", async (siteUrl) => {
     if (siteUrl === undefined) delete process.env.SITE_URL;
     else process.env.SITE_URL = siteUrl;
@@ -138,7 +147,7 @@ describe("publishing metadata", () => {
       template: "%s · Agent 工程笔记",
     });
     expect(metadata.description).toBe("从 Java 后端到 Agent Engineering：代码、失败、实验和工程判断。");
-    expect(metadata.alternates).toEqual({ canonical: "/" });
+    expect(metadata.alternates).toBeUndefined();
     expect(metadata.openGraph).toMatchObject({
       title: "Agent 工程笔记",
       description: "从 Java 后端到 Agent Engineering：代码、失败、实验和工程判断。",
@@ -149,5 +158,49 @@ describe("publishing metadata", () => {
       description: "从 Java 后端到 Agent Engineering：代码、失败、实验和工程判断。",
       images: ["/og.png"],
     });
+  });
+
+  it("sets a route-specific canonical on every static page", async () => {
+    const routes = [
+      ["../../app/page", "/"],
+      ["../../app/journey/page", "/journey"],
+      ["../../app/articles/page", "/articles"],
+      [
+        "../../app/projects/agent-evidence-lab/page",
+        "/projects/agent-evidence-lab",
+      ],
+      ["../../app/about/page", "/about"],
+    ] as const;
+
+    for (const [modulePath, canonical] of routes) {
+      const page = await import(modulePath);
+      expect(page.metadata.alternates).toEqual({ canonical });
+      if (canonical !== "/") {
+        expect(page.metadata.alternates).not.toEqual({ canonical: "/" });
+      }
+    }
+  });
+
+  it("publishes article metadata only for a visible article", async () => {
+    const { generateArticleMetadata } = await import(
+      "../../app/articles/[slug]/route-metadata"
+    );
+
+    await expect(
+      generateArticleMetadata({ params: Promise.resolve({ slug: "visible-note" }) }),
+    ).resolves.toMatchObject({
+      title: "可见的 Agent & 工程笔记",
+      description: "关于 <边界> 与 \"可信\" 输出的说明。",
+      alternates: { canonical: "/articles/visible-note" },
+    });
+    await expect(
+      generateArticleMetadata({ params: Promise.resolve({ slug: "private-draft" }) }),
+    ).resolves.toEqual({});
+    await expect(
+      generateArticleMetadata({ params: Promise.resolve({ slug: "pending-review" }) }),
+    ).resolves.toEqual({});
+    await expect(
+      generateArticleMetadata({ params: Promise.resolve({ slug: "missing" }) }),
+    ).resolves.toEqual({});
   });
 });

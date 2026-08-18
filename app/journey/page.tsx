@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { ReadingPath, type ReadingPathStep } from "../../components/reading-path";
+
+export const metadata: Metadata = {
+  title: "学习路径",
+  description: "Agent Engineering 学习依赖与当前进度。",
+  alternates: { canonical: "/journey" },
+};
 
 const steps: ReadingPathStep[] = [
   { title: "LLM API", description: "先理解请求、响应、采样参数与失败边界。", status: "已记录" },

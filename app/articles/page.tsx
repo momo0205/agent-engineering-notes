@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { SearchFilter } from "../../components/search-filter";
 import { visibleArticles } from "../../lib/content/article-repository";
 import { toSearchItems } from "../../lib/content/article-search-items";
+
+export const metadata: Metadata = {
+  title: "文章",
+  description: "已经公开发布的学习记录、工程实践与真实复盘。",
+  alternates: { canonical: "/articles" },
+};
 
 export default function ArticlesPage() {
   const articles = toSearchItems(visibleArticles());

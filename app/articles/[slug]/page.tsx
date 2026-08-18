@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
-import { ArticleBody } from "@/components/article-body";
+import { ArticleBody } from "../../../components/article-body";
 import {
   articleBySlug,
   visibleArticles,
-} from "@/lib/content/article-repository";
-import { renderMarkdown } from "@/lib/content/markdown-renderer";
+} from "../../../lib/content/article-repository";
+import { renderMarkdown } from "../../../lib/content/markdown-renderer";
+import { generateArticleMetadata } from "./route-metadata";
 
 type ArticlePageProps = {
   params: Promise<{ slug: string }>;
@@ -13,6 +14,8 @@ type ArticlePageProps = {
 export function generateStaticParams() {
   return visibleArticles().map(({ slug }) => ({ slug }));
 }
+
+export const generateMetadata = generateArticleMetadata;
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;

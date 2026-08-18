@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Agent Evidence Lab",
+  description: "用可重复实验理解一个受约束 Agent 的组成、行为和失败边界。",
+  alternates: { canonical: "/projects/agent-evidence-lab" },
+};
+
 const remaining = ["Checkpoint", "Trace", "预算控制", "工具恢复"] as const;
 
 export default function ProjectPage() {

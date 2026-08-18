@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "关于本站",
+  description: "关于 Agent 工程笔记的记录背景与公开内容政策。",
+  alternates: { canonical: "/about" },
+};
+
 export default function AboutPage() {
   return (
     <main id="main-content">

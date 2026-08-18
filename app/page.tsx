@@ -1,5 +1,10 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- vinext does not provide next/link */
+import type { Metadata } from "next";
 import { visibleArticles } from "../lib/content/article-repository";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const editorialTeasers = [
   {

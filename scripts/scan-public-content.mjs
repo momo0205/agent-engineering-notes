@@ -27,8 +27,49 @@ const rules = [
   ["local-user-path", /(?:^|[\s"'(])\/Users\/[^\s"')]+/],
   ["tunnel-token", /\b(?:TUNNEL_TOKEN|TUNNEL_AUTH_TOKEN)\s*=\s*(?!\[REDACTED\])[^\s#]+/i],
   ["tunnel-token", /\b(?:cloudflared|tunnel)\b[^\n]*\s--token(?:=|\s+)(?!\[REDACTED\])[^\s#]+/i],
-  ["dotenv-secret-assignment", /\b(?:[A-Z][A-Z0-9_]*_)?(?:API_KEY|SECRET_KEY|SECRET|TOKEN|PASSWORD|PASSWD)\s*=\s*(?!["']?\[REDACTED\]["']?(?:\s|$))["']?(?!example\b|placeholder\b|changeme\b)[A-Za-z0-9_./+=:-]{12,}["']?/i],
 ];
+
+const assignmentPattern = /(?:^|[\s`])([A-Za-z][A-Za-z0-9_-]*)\s*[:=]\s*(?:"([^"\r\n]*)"|'([^'\r\n]*)'|(\[[^\]\r\n]*\]|[^\s#`]+))/g;
+const sensitiveKeySuffixes = [
+  "api_key",
+  "api-key",
+  "secret_key",
+  "secret-key",
+  "secret",
+  "token",
+  "password",
+  "passwd",
+];
+const safePlaceholders = new Set(["example", "placeholder", "changeme", "redacted"]);
+
+function isSensitiveAssignmentKey(key) {
+  const normalized = key.toLowerCase();
+  return sensitiveKeySuffixes.some((suffix) => (
+    normalized === suffix
+    || normalized.endsWith(`_${suffix}`)
+    || normalized.endsWith(`-${suffix}`)
+  ));
+}
+
+function normalizePlaceholder(value) {
+  const trimmed = value.trim();
+  const unwrapped = trimmed.startsWith("[") && trimmed.endsWith("]")
+    ? trimmed.slice(1, -1).trim()
+    : trimmed;
+  return unwrapped.toLowerCase();
+}
+
+function hasSensitiveAssignment(line) {
+  assignmentPattern.lastIndex = 0;
+  for (const match of line.matchAll(assignmentPattern)) {
+    const key = match[1];
+    const value = match[2] ?? match[3] ?? match[4] ?? "";
+    if (!isSensitiveAssignmentKey(key)) continue;
+    if (safePlaceholders.has(normalizePlaceholder(value))) continue;
+    if (value.length >= 12) return true;
+  }
+  return false;
+}
 
 function toPosix(path) {
   return path.split(sep).join("/");
@@ -46,6 +87,16 @@ export function scanText(text, path) {
         findings.push({ rule, path: toPosix(path), line: index + 1 });
         break;
       }
+    }
+    if (
+      !findings.some((finding) => finding.line === index + 1)
+      && hasSensitiveAssignment(lineText)
+    ) {
+      findings.push({
+        rule: "dotenv-secret-assignment",
+        path: toPosix(path),
+        line: index + 1,
+      });
     }
   }
   return findings;

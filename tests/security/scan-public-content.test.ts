@@ -87,6 +87,55 @@ describe("public content secret scanner", () => {
     expect(scanText(`${name}='[REDACTED]'`, "content/example.md")).toEqual([]);
   });
 
+  it.each([
+    "api_key: abcdefghijklmnopqrstuvwxyz123456",
+    "api-key=abcdefghijklmnopqrstuvwxyz123456",
+    "client-secret: abcdefghijklmnopqrstuvwxyz123456",
+    "OPENAI_API_KEY: abcdefghijklmnopqrstuvwxyz123456",
+    "Client-Secret=abcdefghijklmnopqrstuvwxyz123456",
+  ])("rejects deterministic assignment syntax %s", (text) => {
+    expect(scanText(text, "content/config.md")).toHaveLength(1);
+  });
+
+  it.each([
+    "API_KEY=example-actual-secret-value",
+    "CLIENT_SECRET: placeholder-real-secret-value",
+    "deploy-token=changeme-but-real-credential",
+  ])("does not exempt placeholder-prefixed credential %s", (text) => {
+    expect(scanText(text, "content/config.md")).toHaveLength(1);
+  });
+
+  it.each([
+    "api_key: example",
+    "api-key='placeholder'",
+    'client-secret: "changeme"',
+    "CLIENT_SECRET=[REDACTED]",
+    "CLIENT_SECRET='[REDACTED]'",
+  ])("allows only an entire controlled placeholder value %s", (text) => {
+    expect(scanText(text, "content/config.md")).toEqual([]);
+  });
+
+  it("detects assignments in YAML, INI and Markdown code blocks", () => {
+    const value = "abcdefghijklmnopqrstuvwxyz123456";
+    const text = [
+      `api_key: ${value}`,
+      `client-secret=${value}`,
+      "```env",
+      `DEPLOY_TOKEN=${value}`,
+      "```",
+    ].join("\n");
+
+    expect(scanText(text, "content/configuration.md")).toEqual([
+      { rule: "dotenv-secret-assignment", path: "content/configuration.md", line: 1 },
+      { rule: "dotenv-secret-assignment", path: "content/configuration.md", line: 2 },
+      { rule: "dotenv-secret-assignment", path: "content/configuration.md", line: 4 },
+    ]);
+  });
+
+  it("does not treat ordinary prose as an assignment", () => {
+    expect(scanText("The client secret should stay private.", "README.md")).toEqual([]);
+  });
+
   it("returns only rule, repository-relative path and line", () => {
     const value = "sk-abcdefghijklmnopqrstuvwxyz123456";
     const [finding] = scanText(`safe\n${value}\n`, "content/guide.md");

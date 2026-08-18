@@ -5,7 +5,7 @@ export default function ArticlesPage() {
   const articles = visibleArticles();
 
   return (
-    <main>
+    <main id="main-content">
       <h1>文章</h1>
       <section aria-label="文章列表">
         {articles.map((article) => (

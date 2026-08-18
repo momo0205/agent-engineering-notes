@@ -23,7 +23,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   }
 
   return (
-    <main>
+    <main id="main-content">
       <header>
         <p>
           {article.category} · {article.readingMinutes} 分钟阅读

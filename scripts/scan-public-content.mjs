@@ -16,17 +16,18 @@ export const PUBLIC_ROOTS = [
   "HANDOFF.md",
 ];
 
-const excludedNames = new Set([".git", "node_modules", "ai-instructure"]);
+const excludedNames = new Set([".git", "node_modules"]);
 const rules = [
   ["private-key", /-----BEGIN(?: [A-Z]+)? PRIVATE KEY-----/],
   ["openai-api-key", /\bsk-[A-Za-z0-9_-]{20,}\b/],
+  ["aws-access-key", /\bAKIA[0-9A-Z]{16}\b/],
   ["bearer-authorization", /\b(?:Authorization\s*:\s*)?Bearer\s+(?!\[REDACTED\])[A-Za-z0-9._~+/=-]{20,}/i],
   ["postgresql-url", /\bpostgres(?:ql)?:\/\/(?!\[REDACTED\])[^\s"'<>]+/i],
   ["ipv4-address", /\b(?:\d{1,3}\.){3}\d{1,3}\b/],
   ["local-user-path", /(?:^|[\s"'(])\/Users\/[^\s"')]+/],
   ["tunnel-token", /\b(?:TUNNEL_TOKEN|TUNNEL_AUTH_TOKEN)\s*=\s*(?!\[REDACTED\])[^\s#]+/i],
   ["tunnel-token", /\b(?:cloudflared|tunnel)\b[^\n]*\s--token(?:=|\s+)(?!\[REDACTED\])[^\s#]+/i],
-  ["dotenv-secret-assignment", /\b(?:API_KEY|DATABASE_PASSWORD|PASSWORD|SECRET|TOKEN|ACCESS_TOKEN|AUTH_TOKEN|CLIENT_SECRET)\s*=\s*(?!\[REDACTED\]|example\b|placeholder\b|changeme\b)[^\s#]+/i],
+  ["dotenv-secret-assignment", /\b(?:[A-Z][A-Z0-9_]*_)?(?:API_KEY|SECRET_KEY|TOKEN|PASSWORD)\s*=\s*(?!["']?\[REDACTED\]["']?(?:\s|$))["']?(?!example\b|placeholder\b|changeme\b)[A-Za-z0-9_./+=:-]{12,}["']?/i],
 ];
 
 function toPosix(path) {

@@ -22,6 +22,7 @@ describe("public content secret scanner", () => {
 
   it.each([
     ["OpenAI API key", "sk-abcdefghijklmnopqrstuvwxyz123456"],
+    ["AWS access key", ["AKIA", "ABCDEFGHIJKLMNOP"].join("")],
     ["Bearer authorization", "Authorization: Bearer abcdefghijklmnopqrstuvwxyz"],
     ["Bearer credential", "Bearer abcdefghijklmnopqrstuvwxyz123456"],
     ["private key", "-----BEGIN PRIVATE KEY-----"],
@@ -29,6 +30,9 @@ describe("public content secret scanner", () => {
     ["IPv4 address", "server: 203.0.113.24"],
     ["macOS user path", "/Users/alice/private-notes/plan.md"],
     ["dotenv assignment", "DATABASE_PASSWORD=super-secret-password"],
+    ["OpenAI env assignment", "OPENAI_API_KEY=abcdefghijklmnopqrstuvwxyz123456"],
+    ["Stripe env assignment", "STRIPE_SECRET_KEY=abcdefghijklmnopqrstuvwxyz123456"],
+    ["service token assignment", "DEPLOY_TOKEN=abcdefghijklmnopqrstuvwxyz123456"],
     ["tunnel token", "TUNNEL_TOKEN=abcdefghijklmnopqrstuvwxyz123456"],
     ["tunnel CLI token", "cloudflared tunnel run --token abcdefghijklmnopqrstuvwxyz123456"],
   ])("rejects %s", (_name, text) => {
@@ -41,6 +45,8 @@ describe("public content secret scanner", () => {
       "Use Bearer token authentication.",
       "The service connects to a PostgreSQL database.",
       "API_KEY=[REDACTED]",
+      "OPENAI_API_KEY='[REDACTED]'",
+      'STRIPE_SECRET_KEY="[REDACTED]"',
       "Authorization: Bearer [REDACTED]",
     ].join("\n");
 
@@ -89,5 +95,18 @@ describe("public content secret scanner", () => {
     writeFileSync(join(root, "ai-instructure", "private.md"), "private");
 
     expect(collectPublicFiles(root)).toEqual(["content/guide.md"]);
+  });
+
+  it("scans nested ai-instructure directories inside public roots", () => {
+    const root = mkdtempSync(join(tmpdir(), "public-scan-"));
+    mkdirSync(join(root, "content", "ai-instructure"), { recursive: true });
+    mkdirSync(join(root, "public", "ai-instructure"), { recursive: true });
+    writeFileSync(join(root, "content", "ai-instructure", "leak.md"), "safe");
+    writeFileSync(join(root, "public", "ai-instructure", "config.txt"), "safe");
+
+    expect(collectPublicFiles(root)).toEqual([
+      "content/ai-instructure/leak.md",
+      "public/ai-instructure/config.txt",
+    ]);
   });
 });

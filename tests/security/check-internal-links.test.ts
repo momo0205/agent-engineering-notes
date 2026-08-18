@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -46,6 +47,7 @@ describe("public internal link checker", () => {
     "file:///Users/alice/private.md",
     "/Users/alice/private.md",
     "C:\\Users\\alice\\private.md",
+    "\\\\server\\share\\private.md",
     "../../private-workspace/notes.md",
   ])("rejects unsafe local target %s", (target) => {
     expect(localTargetExists("content/source.md", target, fixture())).toBe(false);
@@ -92,8 +94,40 @@ describe("public internal link checker", () => {
     const failures = checkLinks(["content/source.md"], root);
     expect(failures).toEqual([{
       path: "content/source.md",
-      target: "[unsafe-local-target]",
+      target: "[LOCAL_PATH_REDACTED]",
     }]);
     expect(JSON.stringify(failures)).not.toContain("/Users/alice");
+  });
+
+  it.each([
+    "/Users/alice/private.md",
+    "C:\\Users\\alice\\private.md",
+    "\\\\server\\share\\private.md",
+    "../../private-workspace/alice-plan.md",
+  ])("redacts local and escaping target %s from findings", (target) => {
+    const root = fixture();
+    writeFileSync(join(root, "content", "source.md"), `[private](<${target}>)`);
+
+    const failures = checkLinks(["content/source.md"], root);
+    expect(failures).toEqual([{
+      path: "content/source.md",
+      target: "[LOCAL_PATH_REDACTED]",
+    }]);
+    expect(JSON.stringify(failures)).not.toContain("alice");
+    expect(JSON.stringify(failures)).not.toContain("private-workspace");
+  });
+
+  it("redacts an escaping target from CLI output", () => {
+    const root = fixture();
+    const privateTarget = "../../private-workspace/alice-plan.md";
+    writeFileSync(join(root, "content", "source.md"), `[private](<${privateTarget}>)`);
+    const script = join(process.cwd(), "scripts", "check-internal-links.mjs");
+
+    const result = spawnSync(process.execPath, [script], { cwd: root, encoding: "utf8" });
+    const output = `${result.stdout}${result.stderr}`;
+    expect(result.status).not.toBe(0);
+    expect(output).toContain("[LOCAL_PATH_REDACTED]");
+    expect(output).not.toContain("alice-plan");
+    expect(output).not.toContain("private-workspace");
   });
 });

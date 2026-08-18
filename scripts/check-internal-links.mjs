@@ -63,12 +63,22 @@ export function localTargetExists(source, rawTarget, root = process.cwd()) {
   return candidates.some(existsAsFile);
 }
 
-function safeTargetForOutput(rawTarget) {
+function isUnsafeLocalTarget(source, rawTarget, root) {
   const target = rawTarget.trim();
-  if (/^file:/i.test(target) || /^\/Users(?:\/|$)/.test(target) || /^[A-Za-z]:[\\/]/.test(target)) {
-    return "[unsafe-local-target]";
+  if (/^file:/i.test(target) || /^[/\\]/.test(target) || /^[A-Za-z]:[\\/]/.test(target)) return true;
+  if (/^https?:\/\//i.test(target) || /^mailto:/i.test(target)) return false;
+  let pathname;
+  try {
+    pathname = decodeURIComponent(target.replace(/^<|>$/g, "").split(/[?#]/, 1)[0]);
+  } catch {
+    return true;
   }
-  return target;
+  const resolved = resolve(root, dirname(source), pathname);
+  return !isWithin(resolved, publicBoundary(source, root));
+}
+
+function safeTargetForOutput(source, rawTarget, root) {
+  return isUnsafeLocalTarget(source, rawTarget, root) ? "[LOCAL_PATH_REDACTED]" : rawTarget.trim();
 }
 
 export function extractMarkdownTargets(content) {
@@ -110,7 +120,7 @@ export function checkLinks(files, root = process.cwd()) {
     const content = readFileSync(resolve(root, file), "utf8");
     for (const target of new Set(targetsFor(file, content))) {
       if (!localTargetExists(file, target, root)) {
-        failures.push({ path: toPosix(file), target: safeTargetForOutput(target) });
+        failures.push({ path: toPosix(file), target: safeTargetForOutput(file, target, root) });
       }
     }
   }

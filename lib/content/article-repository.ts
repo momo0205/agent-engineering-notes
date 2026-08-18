@@ -9,12 +9,16 @@ import {
 const defaultArticlesRoot = path.join(process.cwd(), "content", "articles");
 
 export function parseArticle(filename: string, source: string): Article {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(filename)) {
+    throw new Error(`Invalid article filename: ${filename}`);
+  }
+
   const { data, content } = matter(source);
   const metadata = articleMetadataSchema.parse(data);
 
   return {
     ...metadata,
-    slug: path.basename(filename, ".md"),
+    slug: filename.slice(0, -3),
     body: content.trim(),
   };
 }

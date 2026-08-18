@@ -34,6 +34,13 @@ describe("article repository", () => {
     expect(article.body).toBe("正文内容。");
   });
 
+  it.each([".md", "hello world.md", "Foo.md", "foo.md.md"])(
+    "rejects the invalid article filename %s with a clear error",
+    (filename) => {
+      expect(() => parseArticle(filename, source("published"))).toThrow(filename);
+    },
+  );
+
   it("returns only published articles as visible", () => {
     const review = parseArticle("review.md", source("review"));
     const published = parseArticle("published.md", source("published"));

@@ -31,4 +31,29 @@ describe("articleMetadataSchema", () => {
 
     expect(() => articleMetadataSchema.parse(metadataWithoutSummary)).toThrow();
   });
+
+  it.each([
+    ["publishedAt", "2026-13-01"],
+    ["publishedAt", "2026-02-30"],
+    ["publishedAt", "2026-02-29"],
+    ["updatedAt", "2026-13-01"],
+    ["updatedAt", "2026-02-30"],
+    ["updatedAt", "2026-02-29"],
+  ] as const)("rejects an invalid calendar date for %s", (field, date) => {
+    expect(() =>
+      articleMetadataSchema.parse({ ...validMetadata, [field]: date }),
+    ).toThrow();
+  });
+
+  it.each(["publishedAt", "updatedAt"] as const)(
+    "accepts a valid leap day for %s",
+    (field) => {
+      expect(
+        articleMetadataSchema.parse({
+          ...validMetadata,
+          [field]: "2024-02-29",
+        })[field],
+      ).toBe("2024-02-29");
+    },
+  );
 });

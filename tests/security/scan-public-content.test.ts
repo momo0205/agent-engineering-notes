@@ -14,6 +14,7 @@ describe("public content secret scanner", () => {
       "content",
       "app",
       "components",
+      "docs",
       "public",
       "README.md",
       "HANDOFF.md",
@@ -199,6 +200,16 @@ describe("public content secret scanner", () => {
     expect(collectPublicFiles(root)).toEqual([
       "content/ai-instructure/leak.md",
       "public/ai-instructure/config.txt",
+    ]);
+  });
+
+  it("scans public review and design documents", () => {
+    const root = mkdtempSync(join(tmpdir(), "public-scan-"));
+    mkdirSync(join(root, "docs", "review"), { recursive: true });
+    writeFileSync(join(root, "docs", "review", "release.md"), "safe");
+
+    expect(collectPublicFiles(root)).toEqual([
+      "docs/review/release.md",
     ]);
   });
 });

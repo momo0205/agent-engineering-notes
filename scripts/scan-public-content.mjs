@@ -11,6 +11,7 @@ export const PUBLIC_ROOTS = [
   "content",
   "app",
   "components",
+  "docs",
   "public",
   "README.md",
   "HANDOFF.md",

@@ -39,7 +39,7 @@ tags:
 
 ## 修复拆成了四层
 
-第一层是语义规则。系统策略明确要求 `status` 相对于用户问题中的命题判断，而不是相对于候选文本是否被自身 quote 支持。肯定命题的证据进入 supporting IDs，否定命题的证据进入 contradicting IDs。
+第一层是语义规则。系统策略明确要求 `status` 相对于用户问题中的命题判断，而不是相对于候选文本是否被自身 quote 支持。支持用户命题的证据进入 supporting IDs，反驳用户命题的证据进入 contradicting IDs；这里判断的是证据与命题的关系，不是句子的语法肯定或否定。
 
 第二层是协议。模型必须返回恰好七个字段的严格 JSON：协议版本、决策类型、状态、中文回答、支持 ID、反对 ID 和理由。`SUPPORTED` 必须包含允许的支持 ID，`CONTRADICTED` 必须包含允许的反对 ID，`INCONCLUSIVE` 两个列表都为空。
 

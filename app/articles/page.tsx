@@ -1,15 +1,9 @@
-import { SearchFilter, type SearchArticleMetadata } from "@/components/search-filter";
-import { visibleArticles } from "@/lib/content/article-repository";
+import { SearchFilter } from "../../components/search-filter";
+import { visibleArticles } from "../../lib/content/article-repository";
+import { toSearchItems } from "../../lib/content/article-search-items";
 
 export default function ArticlesPage() {
-  const articles: SearchArticleMetadata[] = visibleArticles().map((article) => ({
-    slug: article.slug,
-    title: article.title,
-    summary: article.summary,
-    tags: article.tags,
-    category: article.category,
-    readingMinutes: article.readingMinutes,
-  }));
+  const articles = toSearchItems(visibleArticles());
 
   return (
     <main id="main-content">

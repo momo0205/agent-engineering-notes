@@ -2,13 +2,8 @@
 
 import { useState } from "react";
 import { ArticleCard } from "./article-card";
-import type { ArticleMetadata } from "../lib/content/article-schema";
+import type { SearchArticleMetadata } from "../lib/content/article-search-items";
 import { searchArticles } from "../lib/content/search-index";
-
-export type SearchArticleMetadata = Pick<
-  ArticleMetadata,
-  "category" | "readingMinutes" | "summary" | "title"
-> & { slug: string; tags: readonly string[] };
 
 export function SearchFilter({
   articles,

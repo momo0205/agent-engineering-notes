@@ -11,7 +11,7 @@
 - Repository: 本机 `agent-engineering-notes` checkout（实际位置由新账号启动时选择）
 - Branch: `main`
 - Remote: `https://github.com/momo0205/agent-engineering-notes`
-- Sites preview: `https://agent-engineering-notes.team-gpt-8741.chatgpt.site`
+- Public site: `https://agent-engineering-notes.team-gpt-8741.chatgpt.site`
 - 本文件所在提交是跨账号交接基线；启动后以 `git log -5 --oneline` 确认实际 SHA。
 
 ## Last verified commands
@@ -52,9 +52,9 @@ Review: 无。
 
 ## Remaining work
 
-1. 由 owner 打开 Sites 预览，完成最终视觉和内容验收。
-2. 验收后决定是否将 Sites 访问级别改为公开，以及是否绑定域名。
-3. 私人工作区根仓库还有两个本地文档提交未推送；此前因 SSH 权限失败。这与本公开仓库相互独立。
+首发视觉、内容验收与公开访问均已完成。自定义域名是可选的后续增强，不阻塞当前公开站点。
+
+私人工作区根仓库还有两个本地文档提交未推送；此前因 SSH 权限失败。这与本公开仓库相互独立。
 
 已知非阻塞项：`gray-matter` 在构建中产生上游 direct-eval warning；当前测试与构建通过，但后续可评估替代解析器。
 

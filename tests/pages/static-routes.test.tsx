@@ -22,7 +22,7 @@ describe("static public routes", () => {
     expect(screen.getByText(/M0–M2/)).toBeInTheDocument();
     expect(screen.getByText(/当前：M3/)).toBeInTheDocument();
     expect(screen.getByText(/固定测试集 5\/5/)).toBeInTheDocument();
-    for (const item of ["Checkpoint", "Trace", "预算控制", "工具恢复"]) {
+    for (const item of ["真实 Token/费用预算扣减", "通用工具异常恢复", "对外运行与恢复 API"]) {
       expect(screen.getByText(item)).toBeInTheDocument();
     }
     expect(screen.getByText(/不能外推为生产可靠性/)).toBeInTheDocument();

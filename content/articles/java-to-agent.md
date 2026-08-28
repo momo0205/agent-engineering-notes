@@ -60,7 +60,7 @@ Java 后端经验并没有失效。接口契约、数据库事务、认证、异
 
 ## 当前与未来
 
-当前 M0—M2 已完成，M3 正在进行。系统已有受限的 Search → Resolve → Decide → Verify → Stop 链路，但还不是 production-ready：持久化 checkpoint、生产级步骤与模型用量 trace、真实 Token/费用扣减、通用工具异常恢复以及对外 Agent API 仍未完成。M4 的人工审批与隔离实验执行也尚未开始。
+当前 M0—M2 已完成，M3 正在进行。系统已有受限的 Search → Resolve → Decide → Verify → Stop 链路，以及持久化 checkpoint 和生产级步骤/工具/模型用量 trace；但还不是 production-ready：真实 Token/费用扣减、通用工具异常恢复以及对外 Agent API 仍未完成。M4 的人工审批与隔离实验执行也尚未开始。
 
 我的下一阶段重点不是换语言，而是补齐这些 Harness 能力，并继续用固定回归集检验每次变化。若未来出现 Java 难以承载、而 Python 已证明有明显价值的能力，再通过窄协议把 Worker 接入，而不是迁移整个控制面。
 

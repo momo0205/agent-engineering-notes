@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/projects/agent-evidence-lab" },
 };
 
-const remaining = ["Checkpoint", "Trace", "预算控制", "工具恢复"] as const;
+const remaining = ["真实 Token/费用预算扣减", "通用工具异常恢复", "对外运行与恢复 API"] as const;
 
 export default function ProjectPage() {
   return (
@@ -21,7 +21,7 @@ export default function ProjectPage() {
         <div>
           <p className="section-kicker">进度</p>
           <h2 id="project-status-title">已完成 M0–M2</h2>
-          <p>当前：M3。前几个里程碑建立了基础调用、工具约束和可复现的循环实验。</p>
+          <p>当前：M3。前几个里程碑建立了基础调用、工具约束、可复现循环，以及持久化恢复和生产 Trace。</p>
         </div>
         <div className="evidence-block">
           <strong>固定测试集 5/5</strong>

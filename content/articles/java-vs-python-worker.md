@@ -65,6 +65,6 @@ Java 仍然掌握 Observe、Act、Verify、Recover 和 Stop。即使未来引入
 
 ## 当前与未来
 
-当前 Python Worker 已存在于实验与回归层，不是默认服务依赖。默认路径继续使用 Java，并优先补齐 M3 的 checkpoint、trace、真实预算和工具恢复。未来若 M4 的隔离实验执行大量依赖 Python 数据科学库，Worker 很可能变得有价值；但那需要新的可执行证据，而不是提前宣布。
+当前 Python Worker 已存在于实验与回归层，不是默认服务依赖。默认路径继续使用 Java，并优先补齐 M3 的真实预算和工具恢复。Checkpoint 与 Trace 已有实现，但仍要经过完整环境验收。未来若 M4 的隔离实验执行大量依赖 Python 数据科学库，Worker 很可能变得有价值；但那需要新的可执行证据，而不是提前宣布。
 
 _更新时间：2026-08-18_

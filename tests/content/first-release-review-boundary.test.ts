@@ -4,6 +4,7 @@ import sitemap from "../../app/sitemap";
 import { GET as rss } from "../../app/rss.xml/route";
 
 const publishedSlugs = [
+  "agent-checkpoint-recovery",
   "agent-llm-context-harness",
   "bounded-agent-loop",
   "java-to-agent",
@@ -12,11 +13,11 @@ const publishedSlugs = [
 ] as const;
 
 describe("first-release review boundary", () => {
-  it("publishes all five owner-approved articles", () => {
+  it("publishes all six owner-approved articles", () => {
     const articles = allArticles();
 
     expect(articles.map(({ slug }) => slug)).toEqual([...publishedSlugs].sort());
-    expect(articles).toHaveLength(5);
+    expect(articles).toHaveLength(6);
     expect(visibleArticles(articles).map(({ slug }) => slug)).toEqual(
       [...publishedSlugs].sort(),
     );
@@ -25,7 +26,7 @@ describe("first-release review boundary", () => {
     }
   });
 
-  it("includes all five approved articles in RSS and sitemap", async () => {
+  it("includes all six approved articles in RSS and sitemap", async () => {
     const xml = await rss().text();
     const sitemapText = JSON.stringify(sitemap());
 

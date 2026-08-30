@@ -6,6 +6,8 @@ import { GET as rss } from "../../app/rss.xml/route";
 const publishedSlugs = [
   "agent-checkpoint-recovery",
   "agent-trace-observability",
+  "cloudflare-computer-agent-deployment",
+  "m3-from-demo-to-service",
   "agent-llm-context-harness",
   "bounded-agent-loop",
   "java-to-agent",
@@ -14,6 +16,8 @@ const publishedSlugs = [
 ] as const;
 const publishedInDisplayOrder = [
   "agent-trace-observability",
+  "cloudflare-computer-agent-deployment",
+  "m3-from-demo-to-service",
   "agent-checkpoint-recovery",
   "agent-llm-context-harness",
   "bounded-agent-loop",
@@ -23,11 +27,11 @@ const publishedInDisplayOrder = [
 ] as const;
 
 describe("first-release review boundary", () => {
-  it("publishes all seven owner-approved articles", () => {
+  it("publishes all nine owner-approved articles", () => {
     const articles = allArticles();
 
     expect(articles.map(({ slug }) => slug)).toEqual([...publishedInDisplayOrder]);
-    expect(articles).toHaveLength(7);
+    expect(articles).toHaveLength(9);
     expect(visibleArticles(articles).map(({ slug }) => slug)).toEqual(
       [...publishedInDisplayOrder],
     );
@@ -36,7 +40,7 @@ describe("first-release review boundary", () => {
     }
   });
 
-  it("includes all seven approved articles in RSS and sitemap", async () => {
+  it("includes all nine approved articles in RSS and sitemap", async () => {
     const xml = await rss().text();
     const sitemapText = JSON.stringify(sitemap());
 

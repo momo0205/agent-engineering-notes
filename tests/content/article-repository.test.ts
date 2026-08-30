@@ -29,6 +29,7 @@ tags:
 describe("article repository", () => {
   it("loads deployable articles from sources bundled with the application", () => {
     expect(allArticles().map(({ slug }) => slug)).toEqual([
+      "agent-trace-observability",
       "agent-checkpoint-recovery",
       "agent-llm-context-harness",
       "bounded-agent-loop",

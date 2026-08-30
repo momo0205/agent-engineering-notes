@@ -4,6 +4,7 @@ import sitemap from "../../app/sitemap";
 import { GET as rss } from "../../app/rss.xml/route";
 
 const publishedSlugs = [
+  "agent-budget-and-usage",
   "agent-checkpoint-recovery",
   "agent-trace-observability",
   "cloudflare-computer-agent-deployment",
@@ -15,6 +16,7 @@ const publishedSlugs = [
   "java-vs-python-worker",
 ] as const;
 const publishedInDisplayOrder = [
+  "agent-budget-and-usage",
   "agent-trace-observability",
   "cloudflare-computer-agent-deployment",
   "m3-from-demo-to-service",
@@ -27,11 +29,11 @@ const publishedInDisplayOrder = [
 ] as const;
 
 describe("first-release review boundary", () => {
-  it("publishes all nine owner-approved articles", () => {
+  it("publishes all ten owner-approved articles", () => {
     const articles = allArticles();
 
     expect(articles.map(({ slug }) => slug)).toEqual([...publishedInDisplayOrder]);
-    expect(articles).toHaveLength(9);
+    expect(articles).toHaveLength(10);
     expect(visibleArticles(articles).map(({ slug }) => slug)).toEqual(
       [...publishedInDisplayOrder],
     );
@@ -40,7 +42,7 @@ describe("first-release review boundary", () => {
     }
   });
 
-  it("includes all nine approved articles in RSS and sitemap", async () => {
+  it("includes all ten approved articles in RSS and sitemap", async () => {
     const xml = await rss().text();
     const sitemapText = JSON.stringify(sitemap());
 

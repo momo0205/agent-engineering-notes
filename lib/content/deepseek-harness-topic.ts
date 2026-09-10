@@ -2,6 +2,9 @@ import capabilityBoundary from "../../content/topics/deepseek-harness/capability
 import sourceWalkthrough from "../../content/topics/deepseek-harness/source-walkthrough.md?raw";
 import pluginContextSecurity from "../../content/topics/deepseek-harness/plugin-context-security.md?raw";
 import integrationDecision from "../../content/topics/deepseek-harness/integration-decision.md?raw";
+import harnessFit from "../../content/topics/deepseek-harness/harness-fit.md?raw";
+import toolToAgent from "../../content/topics/deepseek-harness/tool-to-agent.md?raw";
+import reversiblePoc from "../../content/topics/deepseek-harness/reversible-poc.md?raw";
 
 export type TopicChapter = {
   slug: string;
@@ -47,6 +50,30 @@ export const deepSeekHarnessChapters: readonly TopicChapter[] = [
     summary: "对照 Agent Evidence Lab，给出不替换、先观察、以后按插件实验的工程决策。",
     readingMinutes: 11,
     body: integrationDecision,
+  },
+  {
+    slug: "harness-fit",
+    order: "05",
+    title: "一个系统什么时候需要 Harness",
+    summary: "以两个真实项目为对照，建立一套不依赖具体框架的 Harness 适配判断方法。",
+    readingMinutes: 16,
+    body: harnessFit,
+  },
+  {
+    slug: "tool-to-agent",
+    order: "06",
+    title: "从工具到研究 Agent：不要跳过中间层",
+    summary: "把确定性工具、AI 增强应用、工具型 Agent 和长任务 Agent 分层，说明每一步新增什么成本。",
+    readingMinutes: 15,
+    body: toolToAgent,
+  },
+  {
+    slug: "reversible-poc",
+    order: "07",
+    title: "设计一个可撤回的 DSH 实验",
+    summary: "让 DSH 编排研究过程，但不侵入量化核心；用明确指标决定实验是否值得保留。",
+    readingMinutes: 14,
+    body: reversiblePoc,
   },
 ] as const;
 

@@ -122,6 +122,9 @@ describe("publishing metadata", () => {
       { url: "https://notes.example.com/topics/deepseek-harness/source-walkthrough" },
       { url: "https://notes.example.com/topics/deepseek-harness/plugin-context-security" },
       { url: "https://notes.example.com/topics/deepseek-harness/integration-decision" },
+      { url: "https://notes.example.com/topics/deepseek-harness/harness-fit" },
+      { url: "https://notes.example.com/topics/deepseek-harness/tool-to-agent" },
+      { url: "https://notes.example.com/topics/deepseek-harness/reversible-poc" },
       { url: "https://notes.example.com/projects/agent-evidence-lab" },
       { url: "https://notes.example.com/about" },
       {

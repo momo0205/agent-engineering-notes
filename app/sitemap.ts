@@ -6,6 +6,11 @@ const STATIC_ROUTES = [
   "/",
   "/journey",
   "/articles",
+  "/topics/deepseek-harness",
+  "/topics/deepseek-harness/capability-boundary",
+  "/topics/deepseek-harness/source-walkthrough",
+  "/topics/deepseek-harness/plugin-context-security",
+  "/topics/deepseek-harness/integration-decision",
   "/projects/agent-evidence-lab",
   "/about",
 ] as const;

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  ALGORITHM_PROGRESS_STORAGE_KEY,
   ALGORITHM_PROGRESS_STEP_IDS,
   emptyProgress,
   readProgress,
@@ -30,6 +31,22 @@ function browserStorage(): StorageLike | null {
     return window.localStorage;
   } catch {
     return null;
+  }
+}
+
+function isProgressStorageEvent(event: Event, activeStorage: StorageLike | null): boolean {
+  try {
+    const storageEvent = event as StorageEvent;
+    if (event.type !== "storage" || storageEvent.key !== ALGORITHM_PROGRESS_STORAGE_KEY) {
+      return false;
+    }
+
+    const localStorage = browserStorage();
+    if (localStorage && storageEvent.storageArea !== localStorage) return false;
+    if (activeStorage && storageEvent.storageArea !== activeStorage) return false;
+    return activeStorage !== null;
+  } catch {
+    return false;
   }
 }
 
@@ -78,10 +95,17 @@ export function AlgorithmProgress({
         setProgress(event.detail as ProgressV1);
       }
     };
+    const synchronizeStorage = (event: Event) => {
+      if (storageRef.current && isProgressStorageEvent(event, storageRef.current)) {
+        setProgress(readProgress(storageRef.current));
+      }
+    };
     window.addEventListener(PROGRESS_CHANGE_EVENT, synchronize);
+    window.addEventListener("storage", synchronizeStorage);
     return () => {
       if (restoreTimer !== null) window.clearTimeout(restoreTimer);
       window.removeEventListener(PROGRESS_CHANGE_EVENT, synchronize);
+      window.removeEventListener("storage", synchronizeStorage);
     };
   }, [storage]);
 

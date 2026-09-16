@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AlgorithmProgress } from "../../components/algorithm-progress";
 import {
   ALGORITHM_PROGRESS_STORAGE_KEY,
@@ -115,6 +115,48 @@ describe("AlgorithmProgress", () => {
 
     await waitFor(() => expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument());
     expect(readProgress(storage).completed).toEqual({ resnet: ["question"] });
+  });
+
+  it("syncs matching localStorage events without reacting to unrelated storage", async () => {
+    const storage = new MemoryStorage();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
+    Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+
+    const storageEvent = (key: string, storageArea: StorageLike) => {
+      const event = new Event("storage") as StorageEvent;
+      Object.defineProperties(event, {
+        key: { value: key },
+        storageArea: { value: storageArea },
+      });
+      return event;
+    };
+
+    try {
+      render(<AlgorithmProgress />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+
+      const serializedProgress = JSON.stringify({
+        version: 1,
+        completed: { transformer: ["question"] },
+        masteredChecks: {},
+      });
+      storage.setItem(ALGORITHM_PROGRESS_STORAGE_KEY, serializedProgress);
+      act(() => {
+        window.dispatchEvent(storageEvent(ALGORITHM_PROGRESS_STORAGE_KEY, storage));
+      });
+      await waitFor(() => expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument());
+
+      storage.setItem("unrelated", "changed-in-another-tab");
+      act(() => {
+        window.dispatchEvent(storageEvent("unrelated", storage));
+        window.dispatchEvent(storageEvent(ALGORITHM_PROGRESS_STORAGE_KEY, new MemoryStorage()));
+      });
+      expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
+    } finally {
+      storage.removeItem(ALGORITHM_PROGRESS_STORAGE_KEY);
+      storage.removeItem("unrelated");
+      if (originalDescriptor) Object.defineProperty(window, "localStorage", originalDescriptor);
+    }
   });
 
   it("keeps the current render interactive when browser storage is unavailable", async () => {

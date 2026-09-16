@@ -8,6 +8,17 @@ import {
 } from "../../lib/content/algorithm-foundations-topic";
 
 const publicRepository = "https://github.com/momo0205/paper-deep-dive.git";
+const publicRepositoryTree = `https://github.com/momo0205/paper-deep-dive/tree/${algorithmFoundationsRevision}`;
+const chapterLabels = {
+  resnet: "ResNet",
+  transformer: "Transformer",
+  ddpm: "DDPM",
+} as const;
+const relationshipTerms = {
+  resnet: ["信息", "梯度"],
+  transformer: ["残差", "注意力", "前馈"],
+  ddpm: ["去噪", "残差", "注意力"],
+} as const;
 const reproductionSetup = [
   `git clone ${publicRepository}`,
   `git checkout ${algorithmFoundationsRevision}`,
@@ -83,15 +94,17 @@ describe("algorithm foundations topic registry", () => {
       expect(algorithmFoundationsReadingMethod).toContain(requiredText);
     }
 
-    expect(algorithmFoundationsReadingMethod).toContain("改善深层网络中的信息与梯度传递");
-    expect(algorithmFoundationsReadingMethod).toContain("用残差结构承载多层注意力和前馈计算");
-    expect(algorithmFoundationsReadingMethod).toContain("在去噪网络中继续使用残差块，并可引入注意力");
+    expect(algorithmFoundationsReadingMethod).toContain("## 三篇论文的关系");
 
     for (const chapter of algorithmFoundationsChapters) {
       expect(algorithmFoundationsReadingMethod).toContain(
-        `[${chapter.slug === "ddpm" ? "DDPM" : chapter.slug === "resnet" ? "ResNet" : "Transformer"}](https://notes.ironmao.com/topics/algorithm-foundations/${chapter.slug})`,
+        `[${chapterLabels[chapter.slug as keyof typeof chapterLabels]}](https://notes.ironmao.com/topics/algorithm-foundations/${chapter.slug})`,
       );
       expect(algorithmFoundationsReadingMethod).toContain(chapter.abstractUrl);
+      expect(algorithmFoundationsReadingMethod).toContain(chapter.pdfUrl);
+      for (const term of relationshipTerms[chapter.slug as keyof typeof relationshipTerms]) {
+        expect(algorithmFoundationsReadingMethod).toContain(term);
+      }
     }
   });
 
@@ -108,9 +121,14 @@ describe("algorithm foundations topic registry", () => {
       expect(chapter.body).toContain(chapter.abstractUrl);
       expect(chapter.body).toContain(chapter.pdfUrl);
       expect(chapter.body).toContain(algorithmFoundationsRevision);
+      expect(chapter.body).toContain(publicRepository);
+      expect(chapter.body).toContain(publicRepositoryTree);
       expect(chapter.body).toContain(`git checkout ${algorithmFoundationsRevision}`);
       expect(chapter.body).toContain(expectedCommands[chapter.slug as keyof typeof expectedCommands]);
       for (const requiredText of reproductionSetup.slice(2)) {
+        expect(chapter.body).toContain(requiredText);
+      }
+      for (const requiredText of ["--smoke", "--offline", "小型", "不下载数据集", "论文", "复现"]) {
         expect(chapter.body).toContain(requiredText);
       }
       expect(chapter.body).not.toContain("\npython code/");

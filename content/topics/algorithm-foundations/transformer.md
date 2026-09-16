@@ -16,7 +16,7 @@ Transformer 同样反复使用残差连接。与 ResNet 的并列关系值得注
 
 ## 最小复现
 
-在 [paper-deep-dive 固定提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e) 中，以下命令运行一个小型 attention 检查。需要 Python 3.11；命令在 macOS 上显式使用 `python3`，并保留公开仓库 README 所列 smoke 的脚本路径和参数。它用离线输入检查张量路径与基本行为，不下载数据集，也不训练机器翻译模型。
+在 [paper-deep-dive 固定提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e) 中，以下命令运行一个小型 attention 检查。需要 Python 3.11；命令在 macOS 上显式使用 `python3`，并保留公开仓库 README 所列 smoke 的脚本路径和参数。它用离线输入检查张量路径与基本行为，不下载数据集，也不训练机器翻译模型；这是小型检查，不能代表论文发表指标的复现。
 
 ```bash
 git clone https://github.com/momo0205/paper-deep-dive.git

@@ -18,7 +18,7 @@
 - [Transformer](https://notes.ironmao.com/topics/algorithm-foundations/transformer)：用残差结构承载多层注意力和前馈计算；
 - [DDPM](https://notes.ironmao.com/topics/algorithm-foundations/ddpm)：在去噪网络中继续使用残差块，并可引入注意力。
 
-这三句话只描述本专题的阅读线索，不表示后两篇由前一篇严格推导而来。对应的固定原文是 [ResNet abstract](https://arxiv.org/abs/1512.03385v1)、[Transformer abstract](https://arxiv.org/abs/1706.03762v7) 和 [DDPM abstract](https://arxiv.org/abs/2006.11239v2)。
+这三句话只描述本专题的阅读线索，不表示后两篇由前一篇严格推导而来。对应的固定原文是 [ResNet abstract](https://arxiv.org/abs/1512.03385v1) 与 [PDF](https://arxiv.org/pdf/1512.03385v1)、[Transformer abstract](https://arxiv.org/abs/1706.03762v7) 与 [PDF](https://arxiv.org/pdf/1706.03762v7)，以及 [DDPM abstract](https://arxiv.org/abs/2006.11239v2) 与 [PDF](https://arxiv.org/pdf/2006.11239v2)。
 
 ## 官方原文与事实源
 

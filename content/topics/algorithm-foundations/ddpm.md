@@ -16,7 +16,7 @@ DDPM 与前两章的联系是叙事性的：去噪网络本身可以采用残差
 
 ## 最小复现
 
-下面命令来自 [paper-deep-dive 固定提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e)。需要 Python 3.11；命令在 macOS 上显式使用 `python3`，并保留公开仓库 README 所列 smoke 的脚本路径和参数。它运行一个小型、离线的 DDPM smoke，用于检查基本数据流与脚本接口；它不是大规模图像生成训练，也不会下载数据集。
+下面命令来自 [paper-deep-dive 固定提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e)。需要 Python 3.11；命令在 macOS 上显式使用 `python3`，并保留公开仓库 README 所列 smoke 的脚本路径和参数。它运行一个小型、离线的 DDPM smoke，用于检查基本数据流与脚本接口；它不是大规模图像生成训练，不下载数据集，也不能代表论文发表指标的复现。
 
 ```bash
 git clone https://github.com/momo0205/paper-deep-dive.git

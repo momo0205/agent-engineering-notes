@@ -117,12 +117,12 @@ describe("AlgorithmProgress", () => {
     expect(readProgress(storage).completed).toEqual({ resnet: ["question"] });
   });
 
-  it("syncs matching localStorage events without reacting to unrelated storage", async () => {
+  it("syncs matching localStorage events without reacting to unrelated or clear storage", async () => {
     const storage = new MemoryStorage();
     const originalDescriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
     Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
 
-    const storageEvent = (key: string, storageArea: StorageLike) => {
+    const storageEvent = (key: string | null, storageArea: StorageLike) => {
       const event = new Event("storage") as StorageEvent;
       Object.defineProperties(event, {
         key: { value: key },
@@ -150,6 +150,12 @@ describe("AlgorithmProgress", () => {
       act(() => {
         window.dispatchEvent(storageEvent("unrelated", storage));
         window.dispatchEvent(storageEvent(ALGORITHM_PROGRESS_STORAGE_KEY, new MemoryStorage()));
+      });
+      expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
+
+      storage.removeItem(ALGORITHM_PROGRESS_STORAGE_KEY);
+      act(() => {
+        window.dispatchEvent(storageEvent(null, storage));
       });
       expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
     } finally {

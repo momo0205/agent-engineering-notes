@@ -259,9 +259,10 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .topic-grid article:nth-child(4) { background: #e7e5df; }
 .topic-grid article > p:first-child { margin: 0; color: var(--card-meta); font-family: var(--font-mono); font-size: 11px; }
 .topic-grid h2 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
-.topic-grid h2 + p, .topic-grid h3 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.topic-grid h2 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .topic-grid article > a { margin-top: auto; width: fit-content; padding-bottom: 2px; border-bottom: 1px solid currentColor; font-size: 12px; font-weight: 650; }
-.topic-grid h3 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
+.algorithm-course-grid h3 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
+.algorithm-course-grid h3 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .algorithm-topic-status { margin: 0 0 22px; color: var(--card-meta); font-family: var(--font-mono); font-size: 11px; }
 .algorithm-topic-relationships, .algorithm-topic-loop { padding: 42px 44px 28px; }
 .algorithm-topic-question { max-width: 730px; margin: 0 0 28px; color: var(--muted); font-size: 16px; line-height: 1.8; }

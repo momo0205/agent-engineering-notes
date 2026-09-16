@@ -68,12 +68,12 @@ export default function AlgorithmFoundationsTopicPage() {
         </a>
       </header>
 
-      <section className="topic-map" aria-labelledby="algorithm-learning-path-title">
+      <section className="topic-map" aria-label="算法课程学习路径">
         <div className="section-heading">
           <h2 id="algorithm-learning-path-title">学习路径</h2>
           <a href={readingMethodHref}>学习方法 <span aria-hidden="true">→</span></a>
         </div>
-        <div className="topic-grid">
+        <div className="topic-grid algorithm-course-grid">
           {algorithmFoundationsChapters.map((chapter) => (
             <article key={chapter.slug}>
               <p>{chapter.order} · {chapter.readingMinutes} 分钟</p>

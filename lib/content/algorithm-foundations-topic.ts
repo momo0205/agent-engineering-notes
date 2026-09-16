@@ -6,6 +6,7 @@ import transformer from "../../content/topics/algorithm-foundations/transformer.
 export type AlgorithmChapterStatus = "framework" | "learning" | "verified";
 
 export type AlgorithmChapter = {
+  kind: "paper";
   slug: string;
   order: string;
   paperTitle: string;
@@ -20,12 +21,32 @@ export type AlgorithmChapter = {
   body: string;
 };
 
+export type AlgorithmFoundationsReadingMethod = {
+  kind: "reading-method";
+  slug: "reading-method";
+  order: "00";
+  title: string;
+  summary: string;
+  body: string;
+};
+
+export type AlgorithmFoundationsRoute = AlgorithmChapter | AlgorithmFoundationsReadingMethod;
+
 export const algorithmFoundationsRevision = "2b8b41e63608725e6d4f25a44599014b1c22596e";
 export const algorithmFoundationsReviewedAt = "2026-09-16";
 export const algorithmFoundationsReadingMethod = readingMethod;
+export const algorithmFoundationsReadingMethodPage: AlgorithmFoundationsReadingMethod = {
+  kind: "reading-method",
+  slug: "reading-method",
+  order: "00",
+  title: "学习方法",
+  summary: "把问题、原文、最小复现和自测连成可检查的学习循环，再开始三篇论文的阅读。",
+  body: readingMethod,
+};
 
 export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
   {
+    kind: "paper",
     slug: "resnet",
     order: "01",
     paperTitle: "Deep Residual Learning for Image Recognition",
@@ -40,6 +61,7 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
     body: resnet,
   },
   {
+    kind: "paper",
     slug: "transformer",
     order: "02",
     paperTitle: "Attention Is All You Need",
@@ -54,6 +76,7 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
     body: transformer,
   },
   {
+    kind: "paper",
     slug: "ddpm",
     order: "03",
     paperTitle: "Denoising Diffusion Probabilistic Models",
@@ -69,6 +92,15 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
   },
 ] as const;
 
-export function algorithmFoundationsChapter(slug: string): AlgorithmChapter | undefined {
+export type AlgorithmChapterSlug = "resnet" | "transformer" | "ddpm";
+
+export function algorithmFoundationsChapter(slug: AlgorithmChapterSlug): AlgorithmChapter | undefined;
+export function algorithmFoundationsChapter(slug: "reading-method"): AlgorithmFoundationsReadingMethod | undefined;
+export function algorithmFoundationsChapter(slug: string): AlgorithmFoundationsRoute | undefined;
+export function algorithmFoundationsChapter(slug: string): AlgorithmFoundationsRoute | undefined {
+  if (slug === algorithmFoundationsReadingMethodPage.slug) {
+    return algorithmFoundationsReadingMethodPage;
+  }
+
   return algorithmFoundationsChapters.find((chapter) => chapter.slug === slug);
 }

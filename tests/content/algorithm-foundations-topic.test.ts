@@ -2,9 +2,20 @@ import { describe, expect, it } from "vitest";
 import {
   algorithmFoundationsChapter,
   algorithmFoundationsChapters,
+  algorithmFoundationsReadingMethod,
   algorithmFoundationsRevision,
   algorithmFoundationsReviewedAt,
 } from "../../lib/content/algorithm-foundations-topic";
+
+const publicRepository = "https://github.com/momo0205/paper-deep-dive.git";
+const reproductionSetup = [
+  `git clone ${publicRepository}`,
+  `git checkout ${algorithmFoundationsRevision}`,
+  "Python 3.11",
+  "python3 -m venv .venv",
+  "source .venv/bin/activate",
+  "python3 -m pip install -e .",
+] as const;
 
 describe("algorithm foundations topic registry", () => {
   it("binds the three first-release chapters to the reviewed public repository revision", () => {
@@ -65,5 +76,44 @@ describe("algorithm foundations topic registry", () => {
       "Deep Residual Learning for Image Recognition",
     );
     expect(algorithmFoundationsChapter("not-a-paper")).toBeUndefined();
+  });
+
+  it("publishes a reading method with setup, paper relationships, and links to all three chapters", () => {
+    for (const requiredText of reproductionSetup) {
+      expect(algorithmFoundationsReadingMethod).toContain(requiredText);
+    }
+
+    expect(algorithmFoundationsReadingMethod).toContain("改善深层网络中的信息与梯度传递");
+    expect(algorithmFoundationsReadingMethod).toContain("用残差结构承载多层注意力和前馈计算");
+    expect(algorithmFoundationsReadingMethod).toContain("在去噪网络中继续使用残差块，并可引入注意力");
+
+    for (const chapter of algorithmFoundationsChapters) {
+      expect(algorithmFoundationsReadingMethod).toContain(
+        `[${chapter.slug === "ddpm" ? "DDPM" : chapter.slug === "resnet" ? "ResNet" : "Transformer"}](https://notes.ironmao.com/topics/algorithm-foundations/${chapter.slug})`,
+      );
+      expect(algorithmFoundationsReadingMethod).toContain(chapter.abstractUrl);
+    }
+  });
+
+  it("keeps every paper body's pinned source and reproducible command together", () => {
+    const expectedCommands = {
+      resnet: "python3 code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet",
+      transformer:
+        "python3 code/transformer/tiny_attention.py --smoke --offline --output-dir /tmp/paper-deep-dive-transformer",
+      ddpm: "python3 code/ddpm/simple_ddpm.py --smoke --offline --output-dir /tmp/paper-deep-dive-ddpm",
+    } as const;
+
+    for (const chapter of algorithmFoundationsChapters) {
+      expect(chapter.body).toContain(chapter.paperTitle);
+      expect(chapter.body).toContain(chapter.abstractUrl);
+      expect(chapter.body).toContain(chapter.pdfUrl);
+      expect(chapter.body).toContain(algorithmFoundationsRevision);
+      expect(chapter.body).toContain(`git checkout ${algorithmFoundationsRevision}`);
+      expect(chapter.body).toContain(expectedCommands[chapter.slug as keyof typeof expectedCommands]);
+      for (const requiredText of reproductionSetup.slice(2)) {
+        expect(chapter.body).toContain(requiredText);
+      }
+      expect(chapter.body).not.toContain("\npython code/");
+    }
   });
 });

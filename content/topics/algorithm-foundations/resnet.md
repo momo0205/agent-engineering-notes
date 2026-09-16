@@ -16,13 +16,16 @@
 
 ## 最小复现
 
-完整事实源固定在 [paper-deep-dive 的此提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e)。以下离线 smoke 用合成或仓库内小输入运行 plain 与 residual 的最小对照；输出目录显式写在临时位置，便于检查或删除。
+完整事实源固定在 [paper-deep-dive 的此提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e)。需要 Python 3.11；以下命令在 macOS 上显式使用 `python3`，并保留公开仓库 README 所列 smoke 的脚本路径和参数。离线 smoke 用合成或仓库内小输入运行 plain 与 residual 的最小对照；输出目录显式写在临时位置，便于检查或删除。
 
 ```bash
 git clone https://github.com/momo0205/paper-deep-dive.git
 cd paper-deep-dive
 git checkout 2b8b41e63608725e6d4f25a44599014b1c22596e
-python code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
+python3 code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet
 ```
 
 运行前后都应记录 Python 与依赖版本、命令、提交号和输出文件。最小对照的目的在于让结构和测试入口可检查，不是在 CPU smoke 中重做 ImageNet 训练，也不应把它的任何数值当作论文指标。

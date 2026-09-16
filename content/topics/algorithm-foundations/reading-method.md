@@ -10,19 +10,32 @@
 
 一轮学习可以用六步完成：写下问题、快速浏览原文、摘录定义和公式、运行最小程序、记录观察、做一次自测。先写答案尤其重要：它让你之后能指出自己究竟修正了什么，而不是只留下“看懂了”的感觉。
 
+## 三篇论文的关系
+
+课程顺序服务于理解，不替代论文之间的历史或技术考证。第一层关系是信息路径：
+
+- [ResNet](https://notes.ironmao.com/topics/algorithm-foundations/resnet)：改善深层网络中的信息与梯度传递；
+- [Transformer](https://notes.ironmao.com/topics/algorithm-foundations/transformer)：用残差结构承载多层注意力和前馈计算；
+- [DDPM](https://notes.ironmao.com/topics/algorithm-foundations/ddpm)：在去噪网络中继续使用残差块，并可引入注意力。
+
+这三句话只描述本专题的阅读线索，不表示后两篇由前一篇严格推导而来。对应的固定原文是 [ResNet abstract](https://arxiv.org/abs/1512.03385v1)、[Transformer abstract](https://arxiv.org/abs/1706.03762v7) 和 [DDPM abstract](https://arxiv.org/abs/2006.11239v2)。
+
 ## 官方原文与事实源
 
 本专题只链接官方 arXiv 固定版本，不重新托管 PDF。阅读时请在相应论文页打开 abstract 与 PDF；版本号是引用的一部分。完整的代码、测试、下载元数据和原始学习材料属于公开的 [paper-deep-dive 固定提交](https://github.com/momo0205/paper-deep-dive/tree/2b8b41e63608725e6d4f25a44599014b1c22596e)。网站内容是在该提交于 2026-09-16 复核后人工挑选的表达层，并不会随着仓库后续变化自动改变。
 
 ## 最小复现
 
-先克隆固定提交，再选择当前章节的离线 smoke。下面命令只是启动一个小型检查，不下载论文或训练数据集；它不能代替论文中的完整训练设置。
+先克隆固定提交，再选择当前章节的离线 smoke。需要 Python 3.11；以下命令在 macOS 上显式使用 `python3`，脚本路径和 `--smoke --offline` 参数与公开仓库 README 的 smoke 入口一致。下面命令只是启动一个小型检查，不下载论文或训练数据集；它不能代替论文中的完整训练设置。
 
 ```bash
 git clone https://github.com/momo0205/paper-deep-dive.git
 cd paper-deep-dive
 git checkout 2b8b41e63608725e6d4f25a44599014b1c22596e
-python code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
+python3 code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet
 ```
 
 运行前请阅读仓库的 README 和可复现性说明，确认 Python 版本、依赖和输出目录。若命令失败，首先记录环境、完整报错和提交号；不要把一次失败归因于论文，也不要悄悄换参数后只保留成功结果。

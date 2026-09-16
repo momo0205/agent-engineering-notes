@@ -259,8 +259,28 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .topic-grid article:nth-child(4) { background: #e7e5df; }
 .topic-grid article > p:first-child { margin: 0; color: var(--card-meta); font-family: var(--font-mono); font-size: 11px; }
 .topic-grid h2 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
-.topic-grid h2 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.topic-grid h2 + p, .topic-grid h3 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .topic-grid article > a { margin-top: auto; width: fit-content; padding-bottom: 2px; border-bottom: 1px solid currentColor; font-size: 12px; font-weight: 650; }
+.topic-grid h3 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
+.algorithm-topic-status { margin: 0 0 22px; color: var(--card-meta); font-family: var(--font-mono); font-size: 11px; }
+.algorithm-topic-relationships, .algorithm-topic-loop { padding: 42px 44px 28px; }
+.algorithm-topic-question { max-width: 730px; margin: 0 0 28px; color: var(--muted); font-size: 16px; line-height: 1.8; }
+.algorithm-topic-relationship { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.algorithm-topic-relationship-node { min-height: 160px; padding: 25px; border-radius: var(--radius-card); background: var(--card-green); }
+.algorithm-topic-relationship-node:nth-child(2) { background: var(--card-blue); }
+.algorithm-topic-relationship-node:nth-child(3) { background: var(--card-warm); }
+.algorithm-topic-relationship-node h3 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+.algorithm-topic-relationship-node p { margin: 20px 0 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.algorithm-topic-loop-list { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.algorithm-topic-loop-list li { min-height: 110px; padding: 18px; border: 1px solid var(--line); border-radius: 13px; display: flex; flex-direction: column; justify-content: space-between; background: #ecebe6; }
+.algorithm-topic-loop-list span { color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.algorithm-topic-loop-list strong { font-size: 16px; }
+.algorithm-topic-loop-note { margin: 20px 0 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+.algorithm-topic-progress { margin: 12px 44px 0; padding: 30px 32px; border-radius: var(--radius-card); background: var(--card-blue); display: grid; grid-template-columns: 150px 1fr; gap: 30px; }
+.algorithm-topic-progress h2 { margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+.algorithm-topic-progress [role="status"] { color: var(--muted); font-size: 14px; line-height: 1.75; }
+.algorithm-topic-progress [role="status"] strong { color: var(--ink); }
+.algorithm-topic-progress [role="status"] p { margin: 8px 0 0; }
 .topic-note { margin: 12px 44px 0; padding: 28px 32px; border: 1px solid var(--line); border-radius: var(--radius-card); display: grid; grid-template-columns: 150px 1fr; gap: 30px; }
 .topic-note strong { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
 .topic-note p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
@@ -292,10 +312,12 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
   .article-page { padding-bottom: 58px; }
   .article-header { margin: 14px 14px 0; padding: 42px 25px 34px; }
   .topic-hero { margin: 14px 14px 0; padding: 42px 25px 36px; }
-  .topic-facts, .topic-grid, .topic-note { grid-template-columns: 1fr; }
+  .topic-facts, .topic-grid, .topic-note, .algorithm-topic-relationship, .algorithm-topic-loop-list, .algorithm-topic-progress { grid-template-columns: 1fr; }
   .topic-facts { gap: 18px; }
   .topic-map { padding: 42px 22px 24px; }
   .topic-grid article { min-height: 220px; padding: 24px; }
+  .algorithm-topic-relationships, .algorithm-topic-loop { padding: 38px 22px 24px; }
+  .algorithm-topic-progress { margin: 0 22px; padding: 26px; gap: 12px; }
   .topic-note { margin: 0 22px; padding: 26px; gap: 12px; }
   .article-header h1 { font-size: clamp(2.15rem, 10vw, 3.15rem); }
   .article-summary { font-size: 15px; }

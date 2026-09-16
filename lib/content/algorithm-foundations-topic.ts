@@ -5,6 +5,12 @@ import transformer from "../../content/topics/algorithm-foundations/transformer.
 
 export type AlgorithmChapterStatus = "framework" | "learning" | "verified";
 
+export type SelfCheckQuestion = {
+  id: string;
+  prompt: string;
+  answer: string;
+};
+
 export type AlgorithmChapter = {
   kind: "paper";
   slug: string;
@@ -19,6 +25,8 @@ export type AlgorithmChapter = {
   abstractUrl: string;
   pdfUrl: string;
   body: string;
+  reproductionCommand: string;
+  selfChecks: readonly SelfCheckQuestion[];
 };
 
 export type AlgorithmFoundationsReadingMethod = {
@@ -59,6 +67,24 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
     abstractUrl: "https://arxiv.org/abs/1512.03385v1",
     pdfUrl: "https://arxiv.org/pdf/1512.03385v1",
     body: resnet,
+    reproductionCommand: "python3 code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet",
+    selfChecks: [
+      {
+        id: "degradation-vs-overfitting",
+        prompt: "退化问题与过拟合在观测上有什么不同？",
+        answer: "退化可表现为更深模型连训练误差也更高；过拟合则通常是训练集表现较好而验证表现变差。两者仍需结合具体实验判断。",
+      },
+      {
+        id: "residual-function",
+        prompt: "F(x) + x 中的 F 为什么被称为残差？",
+        answer: "F 学习相对输入 x 的补充变换；恒等路径保留 x，不表示网络不再需要学习。",
+      },
+      {
+        id: "smoke-scope",
+        prompt: "一个离线 smoke 成功，为什么不足以声称复现了论文指标？",
+        answer: "它只说明这条小型脚本路径在该环境可运行；没有覆盖论文的数据集、训练配置、评测协议或指标，因此不能替代论文级对照。",
+      },
+    ],
   },
   {
     kind: "paper",
@@ -74,6 +100,24 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
     abstractUrl: "https://arxiv.org/abs/1706.03762v7",
     pdfUrl: "https://arxiv.org/pdf/1706.03762v7",
     body: transformer,
+    reproductionCommand: "python3 code/transformer/tiny_attention.py --smoke --offline --output-dir /tmp/paper-deep-dive-transformer",
+    selfChecks: [
+      {
+        id: "attention-roles",
+        prompt: "QK^T、softmax 和 V 分别在决定什么？",
+        answer: "QK^T 给出 query 与 key 的相关性分数，softmax 将分数归一化为权重，V 是按这些权重混合的信息内容。",
+      },
+      {
+        id: "attention-scaling",
+        prompt: "为什么要对点积做缩放？",
+        answer: "维度增大时点积的数值幅度可能变大，使 softmax 过于尖锐并影响训练；缩放是为缓和这个问题的计算选择。",
+      },
+      {
+        id: "residual-comparison",
+        prompt: "Transformer 的残差路径与 ResNet 有何相似，又有哪些不能直接类比？",
+        answer: "两者都保留较直接的信息路径；但模块、任务和实验设置不同，不能据此推出两篇论文有严格的线性继承或相同效果。",
+      },
+    ],
   },
   {
     kind: "paper",
@@ -89,6 +133,24 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
     abstractUrl: "https://arxiv.org/abs/2006.11239v2",
     pdfUrl: "https://arxiv.org/pdf/2006.11239v2",
     body: ddpm,
+    reproductionCommand: "python3 code/ddpm/simple_ddpm.py --smoke --offline --output-dir /tmp/paper-deep-dive-ddpm",
+    selfChecks: [
+      {
+        id: "forward-reverse-information",
+        prompt: "正向加噪过程和反向生成过程各自需要哪些信息？",
+        answer: "正向过程需要数据、时间步和噪声日程来定义扰动；反向过程需要当前带噪样本、时间步与训练得到的预测，逐步形成样本。",
+      },
+      {
+        id: "smoke-evidence-scope",
+        prompt: "为什么能运行一个 smoke 不等于生成质量已经复现论文？",
+        answer: "smoke 只检查小型数据流和脚本接口；生成质量还依赖数据、训练、采样和评测条件，需公开完整条件和结果才能比较。",
+      },
+      {
+        id: "architecture-claims",
+        prompt: "残差块和注意力与 DDPM 的关系，哪些是架构选择，哪些不是原论文的必然结论？",
+        answer: "它们可作为去噪网络的架构选择来支持信息流或长程交互；不能仅凭这一关联就把某种网络设计说成 DDPM 原论文必然要求。",
+      },
+    ],
   },
 ] as const;
 

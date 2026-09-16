@@ -1,4 +1,5 @@
 export const ALGORITHM_PROGRESS_STORAGE_KEY = "agent-engineering-notes:algorithm-foundations:v1";
+export const ALGORITHM_PROGRESS_CHANGE_EVENT = "algorithm-foundations-progress-change";
 
 export const ALGORITHM_PROGRESS_CHAPTER_IDS = ["resnet", "transformer", "ddpm"] as const;
 export const ALGORITHM_PROGRESS_STEP_IDS = [

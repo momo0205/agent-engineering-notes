@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  ALGORITHM_PROGRESS_CHANGE_EVENT,
   ALGORITHM_PROGRESS_STORAGE_KEY,
   ALGORITHM_PROGRESS_STEP_IDS,
   emptyProgress,
@@ -12,7 +13,6 @@ import {
   type StorageLike,
 } from "../lib/algorithm-progress";
 
-const PROGRESS_CHANGE_EVENT = "algorithm-foundations-progress-change";
 const TOTAL_STEPS = 18;
 
 const stepLabels: Record<AlgorithmProgressStepId, string> = {
@@ -103,11 +103,11 @@ export function AlgorithmProgress({
         setProgress(readProgress(storageRef.current));
       }
     };
-    window.addEventListener(PROGRESS_CHANGE_EVENT, synchronize);
+    window.addEventListener(ALGORITHM_PROGRESS_CHANGE_EVENT, synchronize);
     window.addEventListener("storage", synchronizeStorage);
     return () => {
       if (restoreTimer !== null) window.clearTimeout(restoreTimer);
-      window.removeEventListener(PROGRESS_CHANGE_EVENT, synchronize);
+      window.removeEventListener(ALGORITHM_PROGRESS_CHANGE_EVENT, synchronize);
       window.removeEventListener("storage", synchronizeStorage);
     };
   }, [storage]);
@@ -119,7 +119,7 @@ export function AlgorithmProgress({
       storageRef.current = null;
     }
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent<ProgressV1>(PROGRESS_CHANGE_EVENT, { detail: nextProgress }));
+      window.dispatchEvent(new CustomEvent<ProgressV1>(ALGORITHM_PROGRESS_CHANGE_EVENT, { detail: nextProgress }));
     }
   };
 

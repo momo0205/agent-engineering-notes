@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ArticleBody } from "../../../../components/article-body";
 import { AlgorithmProgress } from "../../../../components/algorithm-progress";
+import { PaperSelfCheck } from "../../../../components/paper-self-check";
 import {
   algorithmFoundationsChapter,
   algorithmFoundationsChapters,
@@ -112,6 +113,12 @@ export default async function AlgorithmFoundationsChapterPage({ params }: Props)
       <AlgorithmProgress
         chapter={chapter.slug}
         chapterName={chapterNames[chapter.slug as keyof typeof chapterNames]}
+      />
+
+      <PaperSelfCheck
+        chapter={chapter.slug}
+        questions={chapter.selfChecks}
+        command={chapter.reproductionCommand}
       />
 
       <nav className="topic-note" aria-label="章节导航">

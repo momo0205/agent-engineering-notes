@@ -1,9 +1,9 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, expect, vi } from "vitest";
 import { PaperSelfCheck, type SelfCheckQuestion } from "../../components/paper-self-check";
 import { algorithmFoundationsChapters } from "../../lib/content/algorithm-foundations-topic";
-import { emptyProgress } from "../../lib/algorithm-progress";
+import { ALGORITHM_PROGRESS_STORAGE_KEY, emptyProgress, type StorageLike } from "../../lib/algorithm-progress";
 
 const questions: readonly SelfCheckQuestion[] = [
   {
@@ -19,6 +19,43 @@ const questions: readonly SelfCheckQuestion[] = [
 ];
 
 const command = "python3 code/resnet/plain_vs_residual.py --smoke --offline --output-dir /tmp/paper-deep-dive-resnet";
+
+class MemoryStorage implements StorageLike {
+  private readonly values = new Map<string, string>();
+
+  getItem(key: string) {
+    return this.values.get(key) ?? null;
+  }
+
+  setItem(key: string, value: string) {
+    this.values.set(key, value);
+  }
+
+  removeItem(key: string) {
+    this.values.delete(key);
+  }
+}
+
+function deferred() {
+  let resolve!: () => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<void>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, resolve, reject };
+}
+
+function replaceClipboard(clipboard: Pick<Clipboard, "writeText"> | undefined) {
+  const originalClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: clipboard });
+
+  return () => {
+    if (originalClipboard) Object.defineProperty(navigator, "clipboard", originalClipboard);
+    else Reflect.deleteProperty(navigator, "clipboard");
+  };
+}
 
 afterEach(() => cleanup());
 
@@ -64,10 +101,48 @@ describe("PaperSelfCheck", () => {
     });
   });
 
+  it("persists only the namespaced v1 mastered check and restores it after remount", async () => {
+    const storage = new MemoryStorage();
+    const originalLocalStorage = Object.getOwnPropertyDescriptor(window, "localStorage");
+    const initialProgress = {
+      version: 1 as const,
+      completed: { resnet: ["question"], transformer: ["skim"] },
+      masteredChecks: { transformer: ["attention-scaling"] },
+    };
+    storage.setItem(ALGORITHM_PROGRESS_STORAGE_KEY, JSON.stringify(initialProgress));
+    storage.setItem("unrelated", "keep-me");
+    Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+
+    try {
+      const firstRender = render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
+      fireEvent.click(screen.getByRole("checkbox", { name: `我已能回答：${questions[0].prompt}` }));
+
+      const persistedProgress = {
+        version: 1,
+        completed: { resnet: ["question"], transformer: ["skim"] },
+        masteredChecks: {
+          transformer: ["attention-scaling"],
+          resnet: ["degradation-vs-overfitting"],
+        },
+      };
+      expect(storage.getItem(ALGORITHM_PROGRESS_STORAGE_KEY)).toBe(JSON.stringify(persistedProgress));
+      expect(storage.getItem("unrelated")).toBe("keep-me");
+
+      firstRender.unmount();
+      render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
+      await waitFor(() => expect(screen.getByRole("checkbox", { name: `我已能回答：${questions[0].prompt}` })).toBeChecked());
+      expect(storage.getItem(ALGORITHM_PROGRESS_STORAGE_KEY)).toBe(JSON.stringify(persistedProgress));
+      expect(storage.getItem("unrelated")).toBe("keep-me");
+    } finally {
+      storage.removeItem(ALGORITHM_PROGRESS_STORAGE_KEY);
+      storage.removeItem("unrelated");
+      if (originalLocalStorage) Object.defineProperty(window, "localStorage", originalLocalStorage);
+    }
+  });
+
   it("copies the exact reproduction command and announces success", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
-    const originalClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");
-    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    const restoreClipboard = replaceClipboard({ writeText });
 
     try {
       render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
@@ -76,17 +151,14 @@ describe("PaperSelfCheck", () => {
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(command));
       expect(screen.getByRole("status")).toHaveTextContent("已复制命令");
     } finally {
-      if (originalClipboard) Object.defineProperty(navigator, "clipboard", originalClipboard);
-      else Reflect.deleteProperty(navigator, "clipboard");
+      restoreClipboard();
     }
   });
 
   it.each(["missing", "rejected"])("does not crash when clipboard access is %s", async (mode) => {
-    const originalClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: mode === "missing" ? undefined : { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
-    });
+    const restoreClipboard = replaceClipboard(mode === "missing"
+      ? undefined
+      : { writeText: vi.fn().mockRejectedValue(new Error("denied")) });
 
     try {
       render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
@@ -94,8 +166,71 @@ describe("PaperSelfCheck", () => {
 
       await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("复制失败，请手动选择"));
     } finally {
-      if (originalClipboard) Object.defineProperty(navigator, "clipboard", originalClipboard);
-      else Reflect.deleteProperty(navigator, "clipboard");
+      restoreClipboard();
+    }
+  });
+
+  it("keeps a newer copy success when an older pending request rejects later", async () => {
+    const firstCopy = deferred();
+    const writeText = vi.fn()
+      .mockReturnValueOnce(firstCopy.promise)
+      .mockResolvedValueOnce(undefined);
+    const restoreClipboard = replaceClipboard({ writeText });
+
+    try {
+      render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
+      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+
+      await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("已复制命令"));
+      await act(async () => firstCopy.reject(new Error("late rejection")));
+      expect(screen.getByRole("status")).toHaveTextContent("已复制命令");
+    } finally {
+      restoreClipboard();
+    }
+  });
+
+  it("keeps a newer missing-clipboard failure when an older pending request succeeds later", async () => {
+    const firstCopy = deferred();
+    const restoreFirstClipboard = replaceClipboard({ writeText: vi.fn().mockReturnValueOnce(firstCopy.promise) });
+
+    try {
+      render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
+      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+      restoreFirstClipboard();
+      const restoreMissingClipboard = replaceClipboard(undefined);
+      try {
+        fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+        expect(screen.getByRole("status")).toHaveTextContent("复制失败，请手动选择");
+
+        await act(async () => firstCopy.resolve());
+        expect(screen.getByRole("status")).toHaveTextContent("复制失败，请手动选择");
+      } finally {
+        restoreMissingClipboard();
+      }
+    } finally {
+      restoreFirstClipboard();
+    }
+  });
+
+  it.each(["resolves", "rejects"])("does not update state or warn when a pending copy %s after unmount", async (outcome) => {
+    const pendingCopy = deferred();
+    const restoreClipboard = replaceClipboard({ writeText: vi.fn().mockReturnValueOnce(pendingCopy.promise) });
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    try {
+      const rendered = render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
+      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+      rendered.unmount();
+
+      await act(async () => {
+        if (outcome === "resolves") pendingCopy.resolve();
+        else pendingCopy.reject(new Error("denied after unmount"));
+      });
+      expect(consoleError).not.toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+      restoreClipboard();
     }
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ALGORITHM_PROGRESS_CHANGE_EVENT,
   emptyProgress,
@@ -55,9 +55,12 @@ export function PaperSelfCheck({
 }) {
   const [storedProgress, setStoredProgress] = useState<ProgressV1>(emptyProgress);
   const [copyStatus, setCopyStatus] = useState("");
+  const copyRequestId = useRef(0);
+  const isMounted = useRef(true);
   const currentProgress = progress ?? storedProgress;
 
   useEffect(() => {
+    isMounted.current = true;
     if (progress !== undefined) return;
 
     const activeStorage = storage ?? browserStorage();
@@ -70,25 +73,39 @@ export function PaperSelfCheck({
     };
   }, [progress, storage]);
 
-  const updateProgress = (nextProgress: ProgressV1) => {
+  useEffect(() => () => {
+    isMounted.current = false;
+  }, []);
+
+  const updateProgress = (nextProgress: (current: ProgressV1) => ProgressV1) => {
     if (progress === undefined) {
-      setStoredProgress(nextProgress);
       const activeStorage = storage ?? browserStorage();
-      if (activeStorage) writeProgress(activeStorage, nextProgress);
+      const stored = activeStorage ? readProgress(activeStorage) : storedProgress;
+      const next = nextProgress(stored);
+      setStoredProgress(next);
+      if (activeStorage) writeProgress(activeStorage, next);
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent<ProgressV1>(ALGORITHM_PROGRESS_CHANGE_EVENT, { detail: nextProgress }));
+        window.dispatchEvent(new CustomEvent<ProgressV1>(ALGORITHM_PROGRESS_CHANGE_EVENT, { detail: next }));
       }
+      onProgressChange?.(next);
+      return;
     }
-    onProgressChange?.(nextProgress);
+    onProgressChange?.(nextProgress(currentProgress));
   };
 
   const copyCommand = async () => {
+    const requestId = copyRequestId.current + 1;
+    copyRequestId.current = requestId;
+    const updateCopyStatus = (nextStatus: string) => {
+      if (isMounted.current && copyRequestId.current === requestId) setCopyStatus(nextStatus);
+    };
+
     try {
       if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
       await navigator.clipboard.writeText(command);
-      setCopyStatus("已复制命令");
+      updateCopyStatus("已复制命令");
     } catch {
-      setCopyStatus("复制失败，请手动选择");
+      updateCopyStatus("复制失败，请手动选择");
     }
   };
 
@@ -111,7 +128,7 @@ export function PaperSelfCheck({
                 id={checkboxId}
                 type="checkbox"
                 checked={mastered.includes(question.id)}
-                onChange={() => updateProgress(toggleMasteredCheck(currentProgress, chapter, question.id))}
+                onChange={() => updateProgress((current) => toggleMasteredCheck(current, chapter, question.id))}
               />
               我已能回答：{question.prompt}
             </label>

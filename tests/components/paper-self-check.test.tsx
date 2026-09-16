@@ -1,7 +1,11 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, expect, vi } from "vitest";
-import { PaperSelfCheck, type SelfCheckQuestion } from "../../components/paper-self-check";
+import {
+  createLatestMountedCommitter,
+  PaperSelfCheck,
+  type SelfCheckQuestion,
+} from "../../components/paper-self-check";
 import { algorithmFoundationsChapters } from "../../lib/content/algorithm-foundations-topic";
 import { ALGORITHM_PROGRESS_STORAGE_KEY, emptyProgress, type StorageLike } from "../../lib/algorithm-progress";
 
@@ -213,25 +217,23 @@ describe("PaperSelfCheck", () => {
     }
   });
 
-  it.each(["resolves", "rejects"])("does not update state or warn when a pending copy %s after unmount", async (outcome) => {
+  it.each(["resolves", "rejects"])("does not commit when a pending copy %s after its owner disposes", async (outcome) => {
     const pendingCopy = deferred();
-    const restoreClipboard = replaceClipboard({ writeText: vi.fn().mockReturnValueOnce(pendingCopy.promise) });
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const commitObserver = vi.fn();
+    const committer = createLatestMountedCommitter(commitObserver);
+    committer.mount();
+    const commit = committer.begin();
+    const completion = pendingCopy.promise.then(
+      () => commit("已复制命令"),
+      () => commit("复制失败，请手动选择"),
+    );
 
-    try {
-      const rendered = render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
-      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
-      rendered.unmount();
+    committer.dispose();
+    if (outcome === "resolves") pendingCopy.resolve();
+    else pendingCopy.reject(new Error("denied after unmount"));
+    await completion;
 
-      await act(async () => {
-        if (outcome === "resolves") pendingCopy.resolve();
-        else pendingCopy.reject(new Error("denied after unmount"));
-      });
-      expect(consoleError).not.toHaveBeenCalled();
-    } finally {
-      consoleError.mockRestore();
-      restoreClipboard();
-    }
+    expect(commitObserver).not.toHaveBeenCalled();
   });
 });
 

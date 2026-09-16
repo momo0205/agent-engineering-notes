@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ALGORITHM_PROGRESS_CHANGE_EVENT,
   emptyProgress,
@@ -12,6 +12,28 @@ import {
 import type { SelfCheckQuestion } from "../lib/content/algorithm-foundations-topic";
 
 export type { SelfCheckQuestion } from "../lib/content/algorithm-foundations-topic";
+
+export function createLatestMountedCommitter<Result>(commit: (result: Result) => void) {
+  let latestRequestId = 0;
+  let mounted = false;
+
+  return {
+    mount() {
+      mounted = true;
+    },
+    dispose() {
+      mounted = false;
+    },
+    begin() {
+      const requestId = latestRequestId + 1;
+      latestRequestId = requestId;
+
+      return (result: Result) => {
+        if (mounted && latestRequestId === requestId) commit(result);
+      };
+    },
+  };
+}
 
 function browserStorage(): StorageLike | null {
   if (typeof window === "undefined") return null;
@@ -55,12 +77,10 @@ export function PaperSelfCheck({
 }) {
   const [storedProgress, setStoredProgress] = useState<ProgressV1>(emptyProgress);
   const [copyStatus, setCopyStatus] = useState("");
-  const copyRequestId = useRef(0);
-  const isMounted = useRef(true);
+  const [copyCommitter] = useState(() => createLatestMountedCommitter(setCopyStatus));
   const currentProgress = progress ?? storedProgress;
 
   useEffect(() => {
-    isMounted.current = true;
     if (progress !== undefined) return;
 
     const activeStorage = storage ?? browserStorage();
@@ -73,9 +93,10 @@ export function PaperSelfCheck({
     };
   }, [progress, storage]);
 
-  useEffect(() => () => {
-    isMounted.current = false;
-  }, []);
+  useEffect(() => {
+    copyCommitter.mount();
+    return () => copyCommitter.dispose();
+  }, [copyCommitter]);
 
   const updateProgress = (nextProgress: (current: ProgressV1) => ProgressV1) => {
     if (progress === undefined) {
@@ -94,18 +115,14 @@ export function PaperSelfCheck({
   };
 
   const copyCommand = async () => {
-    const requestId = copyRequestId.current + 1;
-    copyRequestId.current = requestId;
-    const updateCopyStatus = (nextStatus: string) => {
-      if (isMounted.current && copyRequestId.current === requestId) setCopyStatus(nextStatus);
-    };
+    const commit = copyCommitter.begin();
 
     try {
       if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
       await navigator.clipboard.writeText(command);
-      updateCopyStatus("已复制命令");
+      commit("已复制命令");
     } catch {
-      updateCopyStatus("复制失败，请手动选择");
+      commit("复制失败，请手动选择");
     }
   };
 

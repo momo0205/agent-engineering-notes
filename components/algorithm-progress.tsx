@@ -37,7 +37,10 @@ function browserStorage(): StorageLike | null {
 function isProgressStorageEvent(event: Event, activeStorage: StorageLike | null): boolean {
   try {
     const storageEvent = event as StorageEvent;
-    if (event.type !== "storage" || storageEvent.key !== ALGORITHM_PROGRESS_STORAGE_KEY) {
+    if (
+      event.type !== "storage"
+      || (storageEvent.key !== ALGORITHM_PROGRESS_STORAGE_KEY && storageEvent.key !== null)
+    ) {
       return false;
     }
 

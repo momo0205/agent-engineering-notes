@@ -117,7 +117,7 @@ describe("AlgorithmProgress", () => {
     expect(readProgress(storage).completed).toEqual({ resnet: ["question"] });
   });
 
-  it("syncs matching localStorage events without reacting to unrelated or clear storage", async () => {
+  it("syncs matching or clear localStorage events without reacting to unrelated storage", async () => {
     const storage = new MemoryStorage();
     const originalDescriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
     Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
@@ -133,7 +133,9 @@ describe("AlgorithmProgress", () => {
 
     try {
       render(<AlgorithmProgress />);
-      await new Promise((resolve) => window.setTimeout(resolve, 0));
+      await act(async () => {
+        await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+      });
 
       const serializedProgress = JSON.stringify({
         version: 1,
@@ -157,7 +159,7 @@ describe("AlgorithmProgress", () => {
       act(() => {
         window.dispatchEvent(storageEvent(null, storage));
       });
-      expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
+      expect(screen.getByText("0 / 18 个学习步骤已完成")).toBeInTheDocument();
     } finally {
       storage.removeItem(ALGORITHM_PROGRESS_STORAGE_KEY);
       storage.removeItem("unrelated");

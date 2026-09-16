@@ -148,12 +148,31 @@ describe("AlgorithmProgress", () => {
       });
       await waitFor(() => expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument());
 
-      storage.setItem("unrelated", "changed-in-another-tab");
-      act(() => {
-        window.dispatchEvent(storageEvent("unrelated", storage));
-        window.dispatchEvent(storageEvent(ALGORITHM_PROGRESS_STORAGE_KEY, new MemoryStorage()));
-      });
-      expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
+      const ignoredEvents = [
+        {
+          event: storageEvent("unrelated", storage),
+          storedProgress: {
+            version: 1,
+            completed: { resnet: ["question", "skim"] },
+            masteredChecks: {},
+          },
+        },
+        {
+          event: storageEvent(ALGORITHM_PROGRESS_STORAGE_KEY, new MemoryStorage()),
+          storedProgress: {
+            version: 1,
+            completed: { ddpm: ["question", "skim", "derive"] },
+            masteredChecks: {},
+          },
+        },
+      ];
+      for (const { event, storedProgress } of ignoredEvents) {
+        storage.setItem(ALGORITHM_PROGRESS_STORAGE_KEY, JSON.stringify(storedProgress));
+        act(() => {
+          window.dispatchEvent(event);
+        });
+        expect(screen.getByText("1 / 18 个学习步骤已完成")).toBeInTheDocument();
+      }
 
       storage.removeItem(ALGORITHM_PROGRESS_STORAGE_KEY);
       act(() => {

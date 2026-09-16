@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AlgorithmProgress } from "../../../components/algorithm-progress";
 import {
   algorithmFoundationsChapters,
   algorithmFoundationsRevision,
@@ -124,11 +125,7 @@ export default function AlgorithmFoundationsTopicPage() {
 
       <section className="algorithm-topic-progress" aria-labelledby="algorithm-progress-title">
         <h2 id="algorithm-progress-title">本地进度</h2>
-        <div role="status">
-          <strong>进度占位</strong>
-          <p>专题进度功能正在整理，当前不会自动保存或同步任何数据。</p>
-          <p>未来状态仅保存在当前浏览器；浏览器存储不可用时，会退化为当前会话状态。</p>
-        </div>
+        <AlgorithmProgress />
       </section>
 
       <aside className="topic-note">

@@ -46,6 +46,10 @@ describe("algorithm foundations chapter routes", () => {
       );
       expect(screen.getByText(algorithmFoundationsRevision.slice(0, 8))).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "核心问题" })).toBeInTheDocument();
+      const checklist = screen.getByRole("region", { name: `${chapter.slug === "resnet" ? "ResNet" : chapter.slug === "transformer" ? "Transformer" : "DDPM"} 学习检查` });
+      expect(within(checklist).getAllByRole("checkbox").map((checkbox) => checkbox.getAttribute("data-step-id"))).toEqual([
+        "question", "skim", "derive", "reproduce", "experiment", "self-check",
+      ]);
       expect(screen.getByRole("link", { name: "算法原理与复现" })).toHaveAttribute(
         "href",
         "/topics/algorithm-foundations",

@@ -34,6 +34,7 @@ describe("Algorithm foundations topic homepage", () => {
     );
     expect(screen.getByRole("heading", { name: "学习循环" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "本地进度" })).toBeInTheDocument();
+    expect(screen.getByText("0 / 18 个学习步骤已完成")).toBeInTheDocument();
     expect(screen.getByText(/仅保存在当前浏览器/)).toBeInTheDocument();
     expect(screen.getByText(/ResNet.*学习中/)).toBeInTheDocument();
     expect(screen.getByText(/Transformer.*框架已发布/)).toBeInTheDocument();

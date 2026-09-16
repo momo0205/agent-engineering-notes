@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ArticleBody } from "../../../../components/article-body";
+import { AlgorithmProgress } from "../../../../components/algorithm-progress";
 import {
   algorithmFoundationsChapter,
   algorithmFoundationsChapters,
@@ -107,6 +108,11 @@ export default async function AlgorithmFoundationsChapterPage({ params }: Props)
       </section>
 
       <ArticleBody html={renderMarkdown(chapter.body)} />
+
+      <AlgorithmProgress
+        chapter={chapter.slug}
+        chapterName={chapterNames[chapter.slug as keyof typeof chapterNames]}
+      />
 
       <nav className="topic-note" aria-label="章节导航">
         <strong>课程导航</strong>

@@ -4,7 +4,7 @@
 
 **Goal:** Create a public `momo0205/paper-deep-dive` repository that preserves the verified ResNet, Transformer, and DDPM learning exercises while enforcing source, licensing, reproducibility, and public-content boundaries.
 
-**Architecture:** Build a fresh repository at `/Users/chenmao/Desktop/workspace/paper-deep-dive` from a curated copy of `ai-instructure/03-research/paper-deep-dive`; do not split the existing parent repository or copy its unrelated history. The repository owns executable code, tests, paper metadata, download verification, raw learning notes, and reference outputs. Paper PDFs remain local artifacts fetched from official arXiv URLs and never enter public Git history unless a separate redistribution review explicitly allows one.
+**Architecture:** Build a fresh repository at `<workspace>/paper-deep-dive` from a curated copy of `ai-instructure/03-research/paper-deep-dive`; do not split the existing parent repository or copy its unrelated history. The repository owns executable code, tests, paper metadata, download verification, raw learning notes, and reference outputs. Paper PDFs remain local artifacts fetched from official arXiv URLs and never enter public Git history unless a separate redistribution review explicitly allows one.
 
 **Tech Stack:** Python 3.11+, NumPy, PyTorch CPU, torchvision, scikit-learn, matplotlib, pytest, PyYAML, GitHub Actions.
 
@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Public repository name is exactly `momo0205/paper-deep-dive`.
-- The local checkout is `/Users/chenmao/Desktop/workspace/paper-deep-dive`.
+- The local checkout is `<workspace>/paper-deep-dive`.
 - Preserve the three existing demonstrations' default teaching behavior; only add explicit smoke-mode inputs and public-boundary support.
 - Do not commit PDF files, downloaded datasets, `input.txt`, model files, caches, local absolute paths, company URLs, API keys, or generated outputs outside `outputs/reference/`.
 - The three paper records are arXiv `1512.03385v1`, `1706.03762v7`, and `2006.11239v2`.
@@ -25,7 +25,7 @@
 ## File Map
 
 ```text
-/Users/chenmao/Desktop/workspace/paper-deep-dive/
+<workspace>/paper-deep-dive/
 ├── .github/workflows/ci.yml                 # public CI
 ├── .gitignore                               # public artifact boundary
 ├── README.md                                # learning path and commands
@@ -50,14 +50,14 @@
 ### Task 1: Create the curated repository and enforce its public boundary
 
 **Files:**
-- Create: `/Users/chenmao/Desktop/workspace/paper-deep-dive/.gitignore`
-- Create: `/Users/chenmao/Desktop/workspace/paper-deep-dive/pyproject.toml`
-- Create: `/Users/chenmao/Desktop/workspace/paper-deep-dive/tests/test_public_boundary.py`
+- Create: `<workspace>/paper-deep-dive/.gitignore`
+- Create: `<workspace>/paper-deep-dive/pyproject.toml`
+- Create: `<workspace>/paper-deep-dive/tests/test_public_boundary.py`
 - Copy and reorganize: `questions/`, `papers/*/{notes,summary}.md`, `code/`, `checkpoints/`
-- Create: `/Users/chenmao/Desktop/workspace/paper-deep-dive/notes/{resnet,transformer,ddpm}/`
+- Create: `<workspace>/paper-deep-dive/notes/{resnet,transformer,ddpm}/`
 
 **Interfaces:**
-- Consumes: the reviewed source tree at `/Users/chenmao/Desktop/workspace/ai-instructure/03-research/paper-deep-dive`.
+- Consumes: the reviewed source tree at `<workspace>/ai-instructure/03-research/paper-deep-dive`.
 - Produces: an independently testable Git repository whose tracked files pass `assert_public_tree(root: Path) -> None`.
 
 - [ ] **Step 1: Initialize an empty repository without touching the source tree**
@@ -65,8 +65,8 @@
 Run:
 
 ```bash
-mkdir -p /Users/chenmao/Desktop/workspace/paper-deep-dive
-git -C /Users/chenmao/Desktop/workspace/paper-deep-dive init -b main
+mkdir -p <workspace>/paper-deep-dive
+git -C <workspace>/paper-deep-dive init -b main
 ```
 
 Expected: an empty `main` branch in the new directory; the source worktree remains unchanged.
@@ -82,7 +82,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FORBIDDEN_SUFFIXES = {".pdf", ".pt", ".pth", ".ckpt", ".pyc"}
 FORBIDDEN_PARTS = {".pytest_cache", "__pycache__", "data"}
 FORBIDDEN_TEXT = (
-    "/Users/chenmao/",
+    f"{Path.home()}/",
     "takumi.corp.kuaishou.com",
     "DEEPSEEK_API_KEY=",
     "sk-",
@@ -134,7 +134,7 @@ def test_text_files_do_not_expose_local_or_company_data():
 Run:
 
 ```bash
-cd /Users/chenmao/Desktop/workspace/paper-deep-dive
+cd <workspace>/paper-deep-dive
 python3 -m pytest tests/test_public_boundary.py -q
 ```
 
@@ -171,7 +171,7 @@ Copy only source Markdown and Python files. Move `papers/<paper>/notes.md` and `
 Run:
 
 ```bash
-cd /Users/chenmao/Desktop/workspace/paper-deep-dive
+cd <workspace>/paper-deep-dive
 python3 -m pytest -q
 ```
 
@@ -371,7 +371,7 @@ Run:
 ```bash
 git status --short
 git ls-files | rg '\.(pdf|pt|pth|ckpt)$|(^|/)input\.txt$' && exit 1 || true
-git grep -n -e '/Users/chenmao/' -e 'takumi.corp.kuaishou.com' -e 'DEEPSEEK_API_KEY=' -- . ':!docs/superpowers' && exit 1 || true
+git grep -n -e '/Users/' -e 'takumi.corp.kuaishou.com' -e 'DEEPSEEK_API_KEY=' -- . ':!docs/superpowers' && exit 1 || true
 python3 -m pytest -q
 ```
 

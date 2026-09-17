@@ -125,6 +125,11 @@ describe("publishing metadata", () => {
       { url: "https://notes.example.com/topics/deepseek-harness/harness-fit" },
       { url: "https://notes.example.com/topics/deepseek-harness/tool-to-agent" },
       { url: "https://notes.example.com/topics/deepseek-harness/reversible-poc" },
+      { url: "https://notes.example.com/topics/algorithm-foundations" },
+      { url: "https://notes.example.com/topics/algorithm-foundations/reading-method" },
+      { url: "https://notes.example.com/topics/algorithm-foundations/resnet" },
+      { url: "https://notes.example.com/topics/algorithm-foundations/transformer" },
+      { url: "https://notes.example.com/topics/algorithm-foundations/ddpm" },
       { url: "https://notes.example.com/projects/agent-evidence-lab" },
       { url: "https://notes.example.com/about" },
       {
@@ -186,6 +191,41 @@ describe("publishing metadata", () => {
       if (canonical !== "/") {
         expect(page.metadata.alternates).not.toEqual({ canonical: "/" });
       }
+    }
+  });
+
+  it("publishes a unique title and canonical path for every algorithm topic route", async () => {
+    const overview = await import("../../app/topics/algorithm-foundations/page");
+    const { generateMetadata } = await import(
+      "../../app/topics/algorithm-foundations/[chapter]/page"
+    );
+    const routes = [
+      [overview.metadata, "算法原理与复现", "/topics/algorithm-foundations"],
+      [
+        await generateMetadata({ params: Promise.resolve({ chapter: "reading-method" }) }),
+        "学习方法",
+        "/topics/algorithm-foundations/reading-method",
+      ],
+      [
+        await generateMetadata({ params: Promise.resolve({ chapter: "resnet" }) }),
+        "Deep Residual Learning for Image Recognition",
+        "/topics/algorithm-foundations/resnet",
+      ],
+      [
+        await generateMetadata({ params: Promise.resolve({ chapter: "transformer" }) }),
+        "Attention Is All You Need",
+        "/topics/algorithm-foundations/transformer",
+      ],
+      [
+        await generateMetadata({ params: Promise.resolve({ chapter: "ddpm" }) }),
+        "Denoising Diffusion Probabilistic Models",
+        "/topics/algorithm-foundations/ddpm",
+      ],
+    ] as const;
+
+    expect([...new Set(routes.map(([metadata]) => metadata.title))]).toHaveLength(5);
+    for (const [metadata, title, canonical] of routes) {
+      expect(metadata).toMatchObject({ title, alternates: { canonical } });
     }
   });
 

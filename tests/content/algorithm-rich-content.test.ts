@@ -14,6 +14,10 @@ const sevenLayerHeadings = [
   "## 一页纸总结",
 ] as const;
 
+const base64DataUrlPattern = /data:[^,\s]*;base64,/i;
+const markdownImagePattern = /!\[/;
+const htmlImagePattern = /<img\b/i;
+
 describe("algorithm rich-content publication boundary", () => {
   it("publishes every paper through the approved seven-layer study structure", () => {
     for (const chapter of algorithmFoundationsChapters) {
@@ -35,12 +39,34 @@ describe("algorithm rich-content publication boundary", () => {
       questions: algorithmFoundationsChapters.map((chapter) => chapter.selfChecks),
     });
 
-    expect(publicPayload).not.toMatch(/data:[^;,]+;base64,/i);
-    expect(publicPayload).not.toMatch(/!\[[^\]]*\]\([^)]+\)/);
-    expect(publicPayload).not.toMatch(/<img\b/i);
+    expect(publicPayload).not.toMatch(base64DataUrlPattern);
+    expect(publicPayload).not.toMatch(markdownImagePattern);
+    expect(publicPayload).not.toMatch(htmlImagePattern);
     expect(publicPayload).not.toContain("paperDeepDive.v1");
     expect(publicPayload).not.toMatch(/<textarea|自动保存|中文全文翻译/i);
     expect(Math.max(...algorithmFoundationsChapters.map((chapter) => chapter.body.length))).toBeLessThan(120_000);
+  });
+
+  it("recognizes every forbidden image representation without rejecting normal links", () => {
+    for (const sample of [
+      "data:;base64,AAAA",
+      "data:text/plain;charset=utf-8;base64,AAAA",
+      "data:image/png;base64,AAAA",
+    ]) {
+      expect(sample).toMatch(base64DataUrlPattern);
+    }
+
+    for (const sample of [
+      "![paper](https://example.com/paper.png)",
+      "![paper][figure-one]",
+      "![paper][]",
+      "![paper]",
+      "![]()",
+    ]) {
+      expect(sample).toMatch(markdownImagePattern);
+    }
+
+    expect("[paper](https://example.com/paper)").not.toMatch(markdownImagePattern);
   });
 
   it("keeps experiment observations attached to their small offline scope", () => {

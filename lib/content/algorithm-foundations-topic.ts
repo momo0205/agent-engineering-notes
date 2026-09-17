@@ -84,6 +84,21 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
         prompt: "一个离线 smoke 成功，为什么不足以声称复现了论文指标？",
         answer: "它只说明这条小型脚本路径在该环境可运行；没有覆盖论文的数据集、训练配置、评测协议或指标，因此不能替代论文级对照。",
       },
+      {
+        id: "identity-optimization",
+        prompt: "为什么‘更深网络可以学恒等映射’不等于优化器一定能找到它？",
+        answer: "表达空间中存在恒等解，只说明模型能够表示它；非线性参数化下的优化路径、初始化和训练条件仍可能让求解器难以到达该解。",
+      },
+      {
+        id: "projection-shortcut",
+        prompt: "输入输出维度不一致时，shortcut 为什么可能需要投影？",
+        answer: "逐元素相加要求形状一致；空间尺寸或通道数变化时，需要用投影或其他对齐方案把旁路变换到相同形状。",
+      },
+      {
+        id: "bottleneck-purpose",
+        prompt: "bottleneck 的 1×1、3×3、1×1 结构主要解决什么工程约束？",
+        answer: "前后的 1×1 卷积调整通道数，使成本较高的 3×3 卷积在较窄表示上工作，从而控制深层网络的参数量与计算量。",
+      },
     ],
   },
   {
@@ -117,6 +132,21 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
         prompt: "Transformer 的残差路径与 ResNet 有何相似，又有哪些不能直接类比？",
         answer: "两者都保留较直接的信息路径；但模块、任务和实验设置不同，不能据此推出两篇论文有严格的线性继承或相同效果。",
       },
+      {
+        id: "multi-head-shape",
+        prompt: "多头注意力为什么不是把完整维度的单头计算简单复制多次？",
+        answer: "常见实现把总表示维度分配到多个头，各头使用不同投影，在各自子空间计算后再拼接；具体成本仍取决于实现和维度配置。",
+      },
+      {
+        id: "position-information",
+        prompt: "如果不加入位置信息，自注意力缺少什么？",
+        answer: "它能根据内容建立关系，却不能仅凭相同的集合判断 token 的顺序；位置表示用于把序列位置注入计算。",
+      },
+      {
+        id: "mask-difference",
+        prompt: "padding mask 与 causal mask 分别阻止哪类注意力？",
+        answer: "padding mask 排除补齐的无效位置；causal mask 排除未来位置，防止生成时使用尚未出现的信息。",
+      },
     ],
   },
   {
@@ -149,6 +179,21 @@ export const algorithmFoundationsChapters: readonly AlgorithmChapter[] = [
         id: "architecture-claims",
         prompt: "残差块和注意力与 DDPM 的关系，哪些是架构选择，哪些不是原论文的必然结论？",
         answer: "它们可作为去噪网络的架构选择来支持信息流或长程交互；不能仅凭这一关联就把某种网络设计说成 DDPM 原论文必然要求。",
+      },
+      {
+        id: "closed-form-forward",
+        prompt: "为什么训练时可以直接构造任意时间步的 x_t，而不必从第 1 步依次加噪？",
+        answer: "线性高斯转移的复合仍有高斯闭式，可以由 x_0、累计系数和一次标准高斯噪声直接采样 x_t。",
+      },
+      {
+        id: "simple-loss-boundary",
+        prompt: "为什么不能把 L_simple 与完整变分目标不加区分地视为同一件事？",
+        answer: "L_simple 来自特定参数化和权重简化；它与变分推导有关，但省略或重加权了完整目标中的条件，解释实验时必须保留这一区别。",
+      },
+      {
+        id: "sampling-serial-cost",
+        prompt: "为什么 DDPM 的反向采样通常比一次前向生成慢？",
+        answer: "它从 x_T 开始按时间步重复调用去噪网络，后一步依赖前一步结果；这种串行链路需要多次模型前向。",
       },
     ],
   },

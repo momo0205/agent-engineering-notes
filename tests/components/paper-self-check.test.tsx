@@ -240,9 +240,30 @@ describe("PaperSelfCheck", () => {
 describe("algorithm paper self-check data", () => {
   it("keeps a practical, stable question set for every paper chapter", () => {
     expect(algorithmFoundationsChapters.map(({ slug, selfChecks }) => [slug, selfChecks.map(({ id }) => id)])).toEqual([
-      ["resnet", ["degradation-vs-overfitting", "residual-function", "smoke-scope"]],
-      ["transformer", ["attention-roles", "attention-scaling", "residual-comparison"]],
-      ["ddpm", ["forward-reverse-information", "smoke-evidence-scope", "architecture-claims"]],
+      ["resnet", [
+        "degradation-vs-overfitting",
+        "residual-function",
+        "smoke-scope",
+        "identity-optimization",
+        "projection-shortcut",
+        "bottleneck-purpose",
+      ]],
+      ["transformer", [
+        "attention-roles",
+        "attention-scaling",
+        "residual-comparison",
+        "multi-head-shape",
+        "position-information",
+        "mask-difference",
+      ]],
+      ["ddpm", [
+        "forward-reverse-information",
+        "smoke-evidence-scope",
+        "architecture-claims",
+        "closed-form-forward",
+        "simple-loss-boundary",
+        "sampling-serial-cost",
+      ]],
     ]);
     expect(algorithmFoundationsChapters.flatMap(({ selfChecks }) => selfChecks.map(({ answer }) => answer))).not.toContain("");
   });

@@ -74,11 +74,13 @@ describe("algorithm foundations topic registry", () => {
       expect(chapter.abstractUrl).toMatch(/^https:\/\/arxiv\.org\/abs\/\d+\.\d+v\d+$/);
       expect(chapter.pdfUrl).toMatch(/^https:\/\/arxiv\.org\/pdf\/\d+\.\d+v\d+$/);
       expect(chapter.body.length).toBeGreaterThan(1_000);
+      expect(chapter.body).toContain("## 前置知识");
       expect(chapter.body).toContain("## 核心问题");
+      expect(chapter.body).toContain("## 逐节中文精读导读");
+      expect(chapter.body).toContain("## 关键公式与结构");
       expect(chapter.body).toContain("## 最小复现");
-      expect(chapter.body).toContain("## 已验证");
-      expect(chapter.body).toContain("## 尚未得出结论");
-      expect(chapter.body).toContain("## 自测");
+      expect(chapter.body).toContain("## 自测与能力边界");
+      expect(chapter.body).toContain("## 一页纸总结");
     }
   });
 

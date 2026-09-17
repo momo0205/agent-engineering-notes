@@ -1,5 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterEach, expect, vi } from "vitest";
 import {
   createLatestMountedCommitter,
@@ -64,6 +66,30 @@ function replaceClipboard(clipboard: Pick<Clipboard, "writeText"> | undefined) {
 afterEach(() => cleanup());
 
 describe("PaperSelfCheck", () => {
+  it("presents the self-check as a readable card with separated interactive rows", () => {
+    const style = document.createElement("style");
+    style.textContent = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    document.head.appendChild(style);
+
+    try {
+      const { container } = render(
+        <PaperSelfCheck chapter="resnet" questions={questions} command={command} />,
+      );
+      const section = container.querySelector<HTMLElement>(".paper-self-check");
+      const question = container.querySelector<HTMLElement>(".paper-self-check-question");
+      const summary = screen.getByText(questions[0].prompt, { selector: "summary" });
+      const copyButton = screen.getByRole("button", { name: "复制复现命令" });
+
+      expect(getComputedStyle(section!).paddingTop).toBe("30px");
+      expect(getComputedStyle(question!).borderBottomStyle).toBe("solid");
+      expect(getComputedStyle(summary).cursor).toBe("pointer");
+      expect(getComputedStyle(copyButton).display).toBe("inline-flex");
+      expect(getComputedStyle(copyButton).borderRadius).toBe("10px");
+    } finally {
+      style.remove();
+    }
+  });
+
   it("ships closed native answer disclosures in server-rendered HTML", () => {
     const html = renderToStaticMarkup(
       <PaperSelfCheck chapter="resnet" questions={questions} command={command} />,

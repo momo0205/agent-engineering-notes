@@ -41,7 +41,7 @@ export type AlgorithmFoundationsReadingMethod = {
 export type AlgorithmFoundationsRoute = AlgorithmChapter | AlgorithmFoundationsReadingMethod;
 
 export const algorithmFoundationsRevision = "2b8b41e63608725e6d4f25a44599014b1c22596e";
-export const algorithmFoundationsReviewedAt = "2026-09-16";
+export const algorithmFoundationsReviewedAt = "2026-09-17";
 export const algorithmFoundationsReadingMethod = readingMethod;
 export const algorithmFoundationsReadingMethodPage: AlgorithmFoundationsReadingMethod = {
   kind: "reading-method",

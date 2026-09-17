@@ -32,7 +32,7 @@ describe("algorithm foundations topic registry", () => {
   it("binds the three first-release chapters to the reviewed public repository revision", () => {
     expect(algorithmFoundationsRevision).toBe("2b8b41e63608725e6d4f25a44599014b1c22596e");
     expect(algorithmFoundationsRevision).toMatch(/^[0-9a-f]{40}$/);
-    expect(algorithmFoundationsReviewedAt).toBe("2026-09-16");
+    expect(algorithmFoundationsReviewedAt).toBe("2026-09-17");
     expect(algorithmFoundationsChapters.map(({ slug, status }) => [slug, status])).toEqual([
       ["resnet", "learning"],
       ["transformer", "framework"],

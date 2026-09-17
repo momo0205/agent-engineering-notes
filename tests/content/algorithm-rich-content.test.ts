@@ -78,4 +78,14 @@ describe("algorithm rich-content publication boundary", () => {
       expect(reproduction).toContain("不能代表论文发表指标");
     }
   });
+
+  it("separates gradient stabilization from the degradation problem in the ResNet chapter", () => {
+    const resnet = algorithmFoundationsChapters.find(({ slug }) => slug === "resnet");
+
+    expect(resnet?.body).toContain("### 梯度稳定不等于解决退化");
+    expect(resnet?.body).toContain("Xavier");
+    expect(resnet?.body).toContain("He 初始化");
+    expect(resnet?.body).toContain("Batch Normalization");
+    expect(resnet?.body).toContain("并不等于退化问题已经解决");
+  });
 });

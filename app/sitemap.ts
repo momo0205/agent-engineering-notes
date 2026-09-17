@@ -14,6 +14,11 @@ const STATIC_ROUTES = [
   "/topics/deepseek-harness/harness-fit",
   "/topics/deepseek-harness/tool-to-agent",
   "/topics/deepseek-harness/reversible-poc",
+  "/topics/algorithm-foundations",
+  "/topics/algorithm-foundations/reading-method",
+  "/topics/algorithm-foundations/resnet",
+  "/topics/algorithm-foundations/transformer",
+  "/topics/algorithm-foundations/ddpm",
   "/projects/agent-evidence-lab",
   "/about",
 ] as const;

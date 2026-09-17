@@ -45,6 +45,8 @@ describe("site header", () => {
     ["首页", "/"],
     ["学习路径", "/journey"],
     ["文章", "/articles"],
+    ["Harness", "/topics/deepseek-harness"],
+    ["算法", "/topics/algorithm-foundations"],
     ["项目", "/projects/agent-evidence-lab"],
     ["关于", "/about"],
   ])("links %s to %s", (name, href) => {

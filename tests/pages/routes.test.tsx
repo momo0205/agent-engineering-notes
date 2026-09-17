@@ -70,6 +70,8 @@ describe("skip navigation", () => {
     "app/articles/[slug]/page.tsx",
     "app/topics/deepseek-harness/page.tsx",
     "app/topics/deepseek-harness/[chapter]/page.tsx",
+    "app/topics/algorithm-foundations/page.tsx",
+    "app/topics/algorithm-foundations/[chapter]/page.tsx",
     "app/journey/page.tsx",
     "app/projects/agent-evidence-lab/page.tsx",
     "app/about/page.tsx",

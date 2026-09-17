@@ -35,7 +35,9 @@ describe("algorithm rich-content publication boundary", () => {
       questions: algorithmFoundationsChapters.map((chapter) => chapter.selfChecks),
     });
 
-    expect(publicPayload).not.toMatch(/data:image\//i);
+    expect(publicPayload).not.toMatch(/data:[^;,]+;base64,/i);
+    expect(publicPayload).not.toMatch(/!\[[^\]]*\]\([^)]+\)/);
+    expect(publicPayload).not.toMatch(/<img\b/i);
     expect(publicPayload).not.toContain("paperDeepDive.v1");
     expect(publicPayload).not.toMatch(/<textarea|自动保存|中文全文翻译/i);
     expect(Math.max(...algorithmFoundationsChapters.map((chapter) => chapter.body.length))).toBeLessThan(120_000);

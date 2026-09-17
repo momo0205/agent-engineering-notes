@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Publish a five-page, lightly interactive “算法原理与复现” topic on `notes.ironmao.com`, backed by an immutable public `paper-deep-dive` revision and honest learning-status labels.
+**Goal:** Publish a five-page, lightly interactive “算法原理与复现” topic on `notes.ironmao.com`, enriched with curated material from the local paper workbench and backed by an immutable public `paper-deep-dive` revision.
 
-**Architecture:** Add a topic-specific content registry and routes following the established DeepSeek Harness topic pattern, while reusing the existing Markdown renderer, layout, link checks, secret scan, and Sites deployment. A small client component owns versioned local progress and self-test disclosure state; all article content remains readable without JavaScript, GitHub, or arXiv availability.
+**Architecture:** Add a topic-specific content registry and routes following the established DeepSeek Harness topic pattern, while reusing the existing Markdown renderer, layout, link checks, secret scan, and Sites deployment. Curate prerequisites, question trees, experiment explanations, self-checks, and original section-by-section study guides from the updated local workbench without publishing full-paper translations, embedded paper images, private notes, or a second state model. A small client component owns versioned local progress and self-test disclosure state; all article content remains readable without JavaScript, GitHub, or arXiv availability.
 
 **Tech Stack:** React 19, TypeScript 5.9, vinext/Vite, Vitest, Testing Library, Markdown source files, browser `localStorage`, Sites hosting.
 
@@ -19,6 +19,8 @@
 - Never host an unlicensed paper PDF; use official arXiv links or embeds with a normal-link fallback.
 - Local state key is exactly `agent-engineering-notes:algorithm-foundations:v1`.
 - Do not store free-text notes or transmit local progress.
+- Do not copy the local workbench's full Chinese translations, Base64 images, paper figures, private textareas, or `paperDeepDive.v1` state model into the public site.
+- Each paper page follows the seven-layer structure: prerequisites, core question, original section-by-section study guide, formulas/structure, minimal reproduction, self-check/boundaries, and one-page summary.
 - Every numeric experiment statement links to or names the bound repository commit and its environment.
 - Every task follows RED → GREEN → REFACTOR and ends in its own commit.
 
@@ -42,6 +44,7 @@ tests/components/algorithm-progress.test.tsx
 tests/components/paper-self-check.test.tsx
 tests/pages/algorithm-foundations-topic.test.tsx
 tests/pages/algorithm-foundations-chapter.test.tsx
+tests/content/algorithm-rich-content.test.ts
 ```
 
 Existing files modified: `components/site-header.tsx`, `app/sitemap.ts`, `app/globals.css`, `tests/publishing/publishing-metadata.test.ts`, and `tests/pages/static-routes.test.tsx`. Existing link and security scripts are exercised unchanged.
@@ -60,7 +63,7 @@ Existing files modified: `components/site-header.tsx`, `app/sitemap.ts`, `app/gl
 
 - [ ] **Step 1: Capture the repository revision and write the failing registry tests**
 
-Run `git -C /Users/chenmao/Desktop/workspace/paper-deep-dive rev-parse --verify HEAD` and use the returned full SHA in the tests. Assert exactly three chapters in order, exact statuses, official HTTPS arXiv URLs, explicit versions, non-empty Markdown bodies, and the exact repository revision.
+Run `git -C <workspace>/paper-deep-dive rev-parse --verify HEAD` and use the returned full SHA in the tests. Assert exactly three chapters in order, exact statuses, official HTTPS arXiv URLs, explicit versions, non-empty Markdown bodies, and the exact repository revision.
 
 ```ts
 expect(algorithmFoundationsChapters.map(({ slug, status }) => [slug, status])).toEqual([
@@ -287,7 +290,75 @@ git add components/paper-self-check.tsx tests/components/paper-self-check.test.t
 git commit -m "feat: add algorithm paper self checks"
 ```
 
-### Task 6: Integrate global navigation, sitemap, metadata, and public checks
+### Task 6: Curate the updated local workbench into public study guides
+
+**Files:**
+- Modify: `content/topics/algorithm-foundations/resnet.md`
+- Modify: `content/topics/algorithm-foundations/transformer.md`
+- Modify: `content/topics/algorithm-foundations/ddpm.md`
+- Modify: `lib/content/algorithm-foundations-topic.ts`
+- Create: `tests/content/algorithm-rich-content.test.ts`
+
+**Interfaces:**
+- Consumes: the updated local workbench fields `prereq`, `question`, `checkpoint`, `code_file`, `run_cmd`, `result`, and `zh`; the public repository revision and fixed paper metadata from Tasks 1–5.
+- Produces: three public Markdown bodies with the same seven stable headings and expanded `SelfCheckQuestion[]` data; no raw workbench HTML or second persistence model enters the site.
+
+- [ ] **Step 1: Write failing rich-content and publication-boundary tests**
+
+For every paper body, assert the stable headings `前置知识`, `核心问题`, `逐节中文精读导读`, `关键公式与结构`, `最小复现`, `自测与能力边界`, and `一页纸总结`. Assert the body names the exact repository revision and official fixed-version paper URLs. Assert at least six stable self-check questions per paper.
+
+Add negative assertions across the three bodies and structured data:
+
+```ts
+const publicPayload = JSON.stringify({
+  bodies: algorithmFoundationsChapters.map((chapter) => chapter.body),
+  questions: algorithmFoundationsChapters.map((chapter) => chapter.selfChecks),
+});
+
+expect(publicPayload).not.toMatch(/data:image\//i);
+expect(publicPayload).not.toContain("paperDeepDive.v1");
+expect(publicPayload).not.toMatch(/<textarea|自动保存|中文全文翻译/i);
+expect(Math.max(...algorithmFoundationsChapters.map((chapter) => chapter.body.length))).toBeLessThan(120_000);
+```
+
+- [ ] **Step 2: Run the new content test to verify RED**
+
+Run: `npm test -- --run tests/content/algorithm-rich-content.test.ts`
+
+Expected: FAIL because the current short bodies do not contain the approved seven-layer public study structure or expanded self-check data.
+
+- [ ] **Step 3: Curate prerequisites, questions, experiment evidence, and self-checks**
+
+Read the local workbench as source material, but rewrite it into the site's existing Markdown voice. Preserve correct paper terminology and the distinction between paper claims, repository smoke observations, and personal interpretation. Keep the current honest statuses: ResNet `learning`; Transformer and DDPM `framework`.
+
+Use the local `prereq`, `question`, `checkpoint`, `code_file`, `run_cmd`, and `result` fields as candidates. Do not copy free-text placeholders, local PDF paths, complete source files, or result claims that cannot be traced to the frozen repository revision and environment.
+
+- [ ] **Step 4: Replace full translations with original section-by-section study guides**
+
+For each paper, write an original guide organized around the paper's major sections. Explain what question each section answers, how the reasoning moves forward, and which formulas or figures the reader should inspect in the official PDF. Do not translate paragraph-by-paragraph, reproduce full tables/figures, or embed Base64/data URLs. Short quotations, if indispensable, must be attributed and remain subordinate to original commentary.
+
+- [ ] **Step 5: Run content, renderer, page, link, and public-boundary checks**
+
+Run:
+
+```bash
+npm test -- --run tests/content/algorithm-rich-content.test.ts tests/content/algorithm-foundations-topic.test.ts tests/content/markdown-renderer.test.ts tests/pages/algorithm-foundations-chapter.test.tsx
+npm run check:secrets
+npm run check:links
+npm run typecheck
+npm run build
+```
+
+Expected: all commands pass; production output contains no full translation marker, Base64 paper image, private textarea, or second local-storage key.
+
+- [ ] **Step 6: Commit the curated public study material**
+
+```bash
+git add content/topics/algorithm-foundations lib/content/algorithm-foundations-topic.ts tests/content/algorithm-rich-content.test.ts
+git commit -m "content: expand algorithm paper study guides"
+```
+
+### Task 7: Integrate global navigation, sitemap, metadata, and public checks
 
 **Files:**
 - Modify: `components/site-header.tsx`
@@ -336,7 +407,7 @@ git add components/site-header.tsx app/sitemap.ts tests/pages/static-routes.test
 git commit -m "feat: integrate algorithm topic into site navigation"
 ```
 
-### Task 7: Perform browser acceptance, user gate, and production publication
+### Task 8: Perform browser acceptance, user gate, and production publication
 
 **Files:**
 - Modify only files required by browser findings; every behavior fix needs a regression test.

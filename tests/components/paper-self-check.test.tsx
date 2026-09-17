@@ -79,10 +79,13 @@ describe("PaperSelfCheck", () => {
       const question = container.querySelector<HTMLElement>(".paper-self-check-question");
       const summary = screen.getByText(questions[0].prompt, { selector: "summary" });
       const copyButton = screen.getByRole("button", { name: "复制复现命令" });
+      const actions = copyButton.closest<HTMLElement>(".paper-self-check-actions");
 
       expect(getComputedStyle(section!).paddingTop).toBe("30px");
       expect(getComputedStyle(question!).borderBottomStyle).toBe("solid");
       expect(getComputedStyle(summary).cursor).toBe("pointer");
+      expect(actions).not.toBeNull();
+      expect(getComputedStyle(actions!).display).toBe("flex");
       expect(getComputedStyle(copyButton).display).toBe("inline-flex");
       expect(getComputedStyle(copyButton).borderRadius).toBe("10px");
     } finally {
@@ -176,9 +179,11 @@ describe("PaperSelfCheck", () => {
 
     try {
       render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
-      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+      const copyButton = screen.getByRole("button", { name: "复制复现命令" });
+      fireEvent.click(copyButton);
 
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(command));
+      expect(copyButton).toHaveTextContent("已复制 ✓");
       expect(screen.getByRole("status")).toHaveTextContent("已复制命令");
     } finally {
       restoreClipboard();
@@ -192,8 +197,10 @@ describe("PaperSelfCheck", () => {
 
     try {
       render(<PaperSelfCheck chapter="resnet" questions={questions} command={command} />);
-      fireEvent.click(screen.getByRole("button", { name: "复制复现命令" }));
+      const copyButton = screen.getByRole("button", { name: "复制复现命令" });
+      fireEvent.click(copyButton);
 
+      await waitFor(() => expect(copyButton).toHaveTextContent("复制失败"));
       await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("复制失败，请手动选择"));
     } finally {
       restoreClipboard();

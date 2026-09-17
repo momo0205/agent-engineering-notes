@@ -318,10 +318,11 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .paper-self-check-question details p { margin: 0; padding: 16px 20px 18px; border-top: 1px solid #d8cec7; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .paper-self-check-question > label { padding: 13px 20px 15px; border-top: 1px solid #d8cec7; display: flex; align-items: flex-start; gap: 9px; color: #55524e; cursor: pointer; font-size: 13px; line-height: 1.55; }
 .paper-self-check-question input { width: 16px; height: 16px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--ink); }
-.paper-self-check > button { margin-top: 20px; padding: 11px 17px; border: 0; border-radius: 10px; display: inline-flex; align-items: center; background: var(--feature); color: var(--feature-ink); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
-.paper-self-check > button:hover { background: #343a4d; }
-.paper-self-check > button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-.paper-self-check > p[role="status"] { min-height: 1.5em; margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+.paper-self-check-actions { margin-top: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.paper-self-check-actions > button { padding: 11px 17px; border: 0; border-radius: 10px; display: inline-flex; align-items: center; background: var(--feature); color: var(--feature-ink); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
+.paper-self-check-actions > button:hover { background: #343a4d; }
+.paper-self-check-actions > button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.paper-self-check-actions > p[role="status"] { min-height: 1.5em; margin: 0; color: var(--muted); font-size: 13px; }
 .topic-note { margin: 12px 44px 0; padding: 28px 32px; border: 1px solid var(--line); border-radius: var(--radius-card); display: grid; grid-template-columns: 150px 1fr; gap: 30px; }
 .topic-note strong { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
 .topic-note p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }

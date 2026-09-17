@@ -127,6 +127,11 @@ export function PaperSelfCheck({
   };
 
   const mastered = currentProgress.masteredChecks[chapter] ?? [];
+  const copyButtonLabel = copyStatus === "已复制命令"
+    ? "已复制 ✓"
+    : copyStatus === "复制失败，请手动选择"
+      ? "复制失败"
+      : "复制复现命令";
 
   return (
     <section className="paper-self-check" aria-labelledby={`paper-self-check-${chapter}`}>
@@ -152,8 +157,10 @@ export function PaperSelfCheck({
           </div>
         );
       })}
-      <button type="button" onClick={copyCommand}>复制复现命令</button>
-      <p role="status" aria-live="polite">{copyStatus}</p>
+      <div className="paper-self-check-actions">
+        <button type="button" onClick={copyCommand}>{copyButtonLabel}</button>
+        <p role="status" aria-live="polite">{copyStatus}</p>
+      </div>
     </section>
   );
 }

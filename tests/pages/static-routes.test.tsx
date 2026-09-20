@@ -47,6 +47,7 @@ describe("site header", () => {
     ["文章", "/articles"],
     ["Harness", "/topics/deepseek-harness"],
     ["算法", "/topics/algorithm-foundations"],
+    ["Jev", "/topics/jev"],
     ["项目", "/projects/agent-evidence-lab"],
     ["关于", "/about"],
   ])("links %s to %s", (name, href) => {

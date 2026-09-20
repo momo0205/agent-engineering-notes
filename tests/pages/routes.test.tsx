@@ -72,6 +72,8 @@ describe("skip navigation", () => {
     "app/topics/deepseek-harness/[chapter]/page.tsx",
     "app/topics/algorithm-foundations/page.tsx",
     "app/topics/algorithm-foundations/[chapter]/page.tsx",
+    "app/topics/jev/page.tsx",
+    "app/topics/jev/[chapter]/page.tsx",
     "app/journey/page.tsx",
     "app/projects/agent-evidence-lab/page.tsx",
     "app/about/page.tsx",

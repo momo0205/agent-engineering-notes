@@ -12,6 +12,7 @@ export function SiteHeader() {
         <a href="/articles">文章</a>
         <a href="/topics/deepseek-harness">Harness</a>
         <a href="/topics/algorithm-foundations">算法</a>
+        <a href="/topics/jev">Jev</a>
         <a href="/projects/agent-evidence-lab">项目</a>
         <a href="/about">关于</a>
       </nav>

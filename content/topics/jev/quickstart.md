@@ -10,10 +10,10 @@
 python -m venv .venv
 source .venv/bin/activate
 pip install typesafe-sdk
-export TYPESAFE_API_KEY="your-key-here"
+export TYPESAFE_API_KEY="[REDACTED]"
 ```
 
-`your-key-here` 只是占位符。SDK 默认从环境变量 `TYPESAFE_API_KEY` 读取密钥。不要把真实值写进 Python、Markdown、截图或命令历史；本地可使用被 `.gitignore` 排除的 `.env`，CI 使用 GitHub Actions Secret。公开仓库提交前还应运行敏感信息扫描。
+`[REDACTED]` 只是占位符。SDK 默认从环境变量 `TYPESAFE_API_KEY` 读取密钥。不要把真实值写进 Python、Markdown、截图或命令历史；本地可使用被 `.gitignore` 排除的 `.env`，CI 使用 GitHub Actions Secret。公开仓库提交前还应运行敏感信息扫描。
 
 ## 第一次 Choice
 

@@ -55,4 +55,15 @@ describe("Jev research topic registry", () => {
     expect(body).toContain("环境变量");
     expect(body).not.toMatch(/(?:sk|ts)-[A-Za-z0-9_-]{20,}/);
   });
+
+  it("keeps public claims attached to primary sources and publication boundaries", () => {
+    const payload = jevChapters.map(({ body }) => body).join("\n");
+    expect(payload).toContain("https://typesafe.ai/");
+    expect(payload).toContain("https://docs.typesafe.ai/");
+    expect(payload).toContain("https://github.com/typesafe-ai/typesafe-sdk-python");
+    expect(payload).toContain("https://evals.typesafe.ai/");
+    expect(payload).not.toContain("paperDeepDive.v1");
+    expect(payload).not.toMatch(/(?:sk|ts)-[A-Za-z0-9_-]{20,}/);
+    expect(payload).not.toMatch(/零幻觉|绝对可靠/);
+  });
 });

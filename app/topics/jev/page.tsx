@@ -26,7 +26,7 @@ export default function JevTopicPage() {
           <div><dt>最近审阅</dt><dd>{jevReviewedAt}</dd></div>
           <div><dt>本地验证</dt><dd>实验尚未开始</dd></div>
         </dl>
-        <a className="text-link" href="/topics/jev/why-jev">
+        <a className="text-link" href={`/topics/jev/${jevChapters[0].slug}`}>
           从研究动机开始 <span aria-hidden="true">→</span>
         </a>
       </header>

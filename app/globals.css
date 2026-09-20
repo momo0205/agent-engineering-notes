@@ -340,6 +340,13 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .jev-open-questions { display: grid; grid-template-columns: 190px 1fr; gap: 44px; background: var(--card-green); }
 .jev-open-questions ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.85; }
 .jev-open-questions li + li { margin-top: 8px; }
+.jev-chapter-evidence { margin: 28px 44px 0; padding: 26px 32px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--card-green); }
+.jev-chapter-evidence dl { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.jev-chapter-evidence dt { color: var(--card-meta); font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
+.jev-chapter-evidence dd { margin: 8px 0 0; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.jev-chapter-evidence code { font-family: var(--font-mono); }
+.jev-chapter-evidence [role="status"] { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid #cfd9d1; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.jev-chapter-evidence [role="status"] strong { color: var(--ink); }
 .topic-chapter .article-header { background: var(--card-blue); }
 .topic-chapter .article-byline a { border-bottom: 1px solid currentColor; }
 
@@ -368,7 +375,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
   .article-page { padding-bottom: 58px; }
   .article-header { margin: 14px 14px 0; padding: 42px 25px 34px; }
   .topic-hero { margin: 14px 14px 0; padding: 42px 25px 36px; }
-  .topic-facts, .topic-grid, .topic-note, .jev-evidence-row, .jev-open-questions, .algorithm-topic-relationship, .algorithm-topic-loop-list, .algorithm-topic-progress, .algorithm-progress-checklist { grid-template-columns: 1fr; }
+  .topic-facts, .topic-grid, .topic-note, .jev-evidence-row, .jev-open-questions, .jev-chapter-evidence dl, .algorithm-topic-relationship, .algorithm-topic-loop-list, .algorithm-topic-progress, .algorithm-progress-checklist { grid-template-columns: 1fr; }
   .topic-facts { gap: 18px; }
   .topic-map { padding: 42px 22px 24px; }
   .topic-grid article { min-height: 220px; padding: 24px; }
@@ -377,6 +384,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
   .topic-note { margin: 0 22px; padding: 26px; gap: 12px; }
   .jev-question-panel, .jev-current-view, .jev-open-questions { margin-right: 22px; margin-left: 22px; padding: 26px; }
   .jev-open-questions { gap: 18px; }
+  .jev-chapter-evidence { margin-right: 22px; margin-left: 22px; padding: 24px; }
   .article-header h1 { font-size: clamp(2.15rem, 10vw, 3.15rem); }
   .article-summary { font-size: 15px; }
   .article-byline { align-items: flex-start; flex-direction: column; }

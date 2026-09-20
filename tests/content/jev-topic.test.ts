@@ -66,4 +66,20 @@ describe("Jev research topic registry", () => {
     expect(payload).not.toMatch(/(?:sk|ts)-[A-Za-z0-9_-]{20,}/);
     expect(payload).not.toMatch(/零幻觉|绝对可靠/);
   });
+
+  it("does not confuse reasoning mode with whether reasoning text is visible", () => {
+    const body = jevChapter("text-context-reasoning")!.body;
+    expect(body).toContain("thinking-enabled");
+    expect(body).toContain("thinking-disabled");
+    expect(body).toContain("不能单独证明可见文本");
+    expect(body).toContain("推理 token");
+  });
+
+  it("keeps threshold tuning separate from held-out evaluation", () => {
+    const body = jevChapter("experiment-plan")!.body;
+    expect(body).toContain("开发/校准集");
+    expect(body).toContain("保留测试集");
+    expect(body).toContain("配置冻结");
+    expect(body).toContain("相关样本");
+  });
 });

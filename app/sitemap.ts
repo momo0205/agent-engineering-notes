@@ -19,6 +19,13 @@ const STATIC_ROUTES = [
   "/topics/algorithm-foundations/resnet",
   "/topics/algorithm-foundations/transformer",
   "/topics/algorithm-foundations/ddpm",
+  "/topics/jev",
+  "/topics/jev/why-jev",
+  "/topics/jev/capability-boundary",
+  "/topics/jev/text-context-reasoning",
+  "/topics/jev/benchmark-audit",
+  "/topics/jev/quickstart",
+  "/topics/jev/experiment-plan",
   "/projects/agent-evidence-lab",
   "/about",
 ] as const;

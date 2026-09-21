@@ -215,7 +215,7 @@ Each Markdown file must use descriptive headings and source links near the claim
 
 - TypeSafe early-access and Vercel AI Gateway paths;
 - `python -m venv .venv`, activation, and `pip install typesafe-sdk`;
-- `export TYPESAFE_API_KEY="your-key-here"` as a placeholder only;
+- `export TYPESAFE_API_KEY="[REDACTED]"` as a placeholder only;
 - one minimal Choice example plus smaller Score and Noul examples based on official SDK shapes;
 - timeout, rate-limit, invalid-answer-space, and missing-key handling;
 - `.env` / GitHub Secret guidance and a warning that no local Jev call has yet been verified for this topic.
@@ -614,4 +614,3 @@ On `https://notes.ironmao.com`, verify:
 - [ ] **Step 6: Report the shipped scope honestly**
 
 Report the public topic URL, chapter count, verification results, and commit. State that the research topic and tutorial framework are published, while real Jev API execution and the independent Python experiment bench remain the next phase.
-

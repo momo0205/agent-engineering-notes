@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- vinext does not provide next/link */
 import { notFound } from "next/navigation";
 import { ArticleBody } from "../../../../components/article-body";
 import {

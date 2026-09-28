@@ -26,6 +26,7 @@ const STATIC_ROUTES = [
   "/topics/jev/benchmark-audit",
   "/topics/jev/quickstart",
   "/topics/jev/experiment-plan",
+  "/topics/jev/laya-reference-implementation",
   "/projects/agent-evidence-lab",
   "/about",
 ] as const;

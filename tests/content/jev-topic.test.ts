@@ -13,12 +13,13 @@ const expectedSlugs = [
   "benchmark-audit",
   "quickstart",
   "experiment-plan",
+  "laya-reference-implementation",
 ];
 
 describe("Jev research topic registry", () => {
-  it("publishes the approved six chapters in order", () => {
+  it("publishes the research chapters in order", () => {
     expect(jevChapters.map(({ slug }) => slug)).toEqual(expectedSlugs);
-    expect(jevReviewedAt).toBe("2026-09-20");
+    expect(jevReviewedAt).toBe("2026-09-28");
     expect(jevModelVersion).toMatch(/jev/i);
     expect(jevChapter("why-jev")?.order).toBe("01");
     expect(jevChapter("missing")).toBeUndefined();
@@ -42,11 +43,47 @@ describe("Jev research topic registry", () => {
     expect(body).toContain("不是人工真值");
   });
 
-  it("marks the experiment as planned rather than completed", () => {
+  it("separates completed offline baselines from the unrun live Jev evaluation", () => {
     const body = jevChapter("experiment-plan")!.body;
-    expect(body).toContain("实验尚未开始");
+    expect(body).toContain("Jev 在线实测尚未开始");
+    expect(body).toContain("规则/分类器离线试跑");
+    expect(body).toContain("正式对照评估还没有开始");
+    expect(body).toContain("正式对照评估完成前，正式结果位均标记待执行");
+    expect(body).toContain("探索性试跑单独说明");
+    expect(body).toContain("探索性小样本");
     expect(body).toContain("Shadow Mode");
     expect(body).not.toMatch(/我们已经证明|实验结果表明/);
+  });
+
+  it("treats Laya as an inspectable reference, not evidence about Jev internals", () => {
+    const chapter = jevChapter("laya-reference-implementation")!;
+    expect(chapter.title).toBe("Laya：一个可检查的决策模型实现");
+    expect(chapter.localExperiment).toBe("not-started");
+    expect(chapter.body).toContain("双向 Transformer 编码器");
+    expect(chapter.body).toContain("`choice`");
+    expect(chapter.body).toContain("0.766");
+    expect(chapter.body).toContain("0.361");
+    expect(chapter.body).toContain("0.352");
+    expect(chapter.body).toContain("0.461");
+    expect(chapter.body).toContain("不能据此推断 Jev");
+    expect(chapter.body).toContain("项目自报");
+    expect(chapter.body).toContain("13/18");
+    expect(chapter.body).toContain("30/72");
+    expect(chapter.body).toContain("0.9437");
+    expect(chapter.body).toContain("太慢了");
+    expect(chapter.body).toContain("20/64");
+    expect(chapter.body).toContain("64/64");
+    expect(chapter.body).toContain("不是留出测试集");
+    expect(chapter.body).toContain("https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/research/benchmarks/zh_short_commands/README.md");
+    expect(chapter.body).toContain("https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/research/benchmarks/feishu_zh/README.md");
+  });
+
+  it("updates the research route without claiming live Jev results", () => {
+    const why = jevChapter("why-jev")!.body;
+    expect(why).toContain("规则/分类器离线试跑");
+    expect(why).toContain("正式对照评估和 Jev 在线实测尚未开始");
+    expect(why).toContain("Jev 在线实测尚未开始");
+    expect(why).not.toContain("第一版还没有“本地复现”");
   });
 
   it("documents safe key configuration without publishing a key", () => {

@@ -29,6 +29,7 @@ describe("Jev chapter routes", () => {
       { chapter: "benchmark-audit" },
       { chapter: "quickstart" },
       { chapter: "experiment-plan" },
+      { chapter: "laya-reference-implementation" },
     ]);
   });
 
@@ -38,7 +39,17 @@ describe("Jev chapter routes", () => {
     expect(screen.getByText("证据级别")).toBeInTheDocument();
     expect(screen.getByText("最近审阅")).toBeInTheDocument();
     expect(screen.getByText("模型版本")).toBeInTheDocument();
-    expect(screen.getAllByText("实验尚未开始").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/本章尚无对应模型的本地实测/).length).toBeGreaterThan(0);
+  });
+
+  it("renders the Laya explanation as formatted article content", async () => {
+    await renderRoute("laya-reference-implementation");
+    expect(screen.getAllByRole("table")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: /Laya 源码：laya\/common\.py/ })).toHaveAttribute(
+      "href", "https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/laya/common.py",
+    );
+    expect(document.querySelector(".article-body")?.textContent).toContain("双向 Transformer 编码器");
+    expect(document.querySelector(".article-body pre code")).not.toBeNull();
   });
 
   it("derives previous and next links from registry order", async () => {
@@ -60,6 +71,14 @@ describe("Jev chapter routes", () => {
     expect(screen.getByRole("link", { name: `上一篇：${jevChapters[4].title}` })).toHaveAttribute(
       "href", "/topics/jev/quickstart",
     );
+    expect(screen.getByRole("link", { name: `下一篇：${jevChapters[6].title}` })).toHaveAttribute(
+      "href", "/topics/jev/laya-reference-implementation",
+    );
+
+    await renderRoute("laya-reference-implementation");
+    expect(screen.getByRole("link", { name: `上一篇：${jevChapters[5].title}` })).toHaveAttribute(
+      "href", "/topics/jev/experiment-plan",
+    );
     expect(screen.queryByRole("link", { name: /下一篇/ })).not.toBeInTheDocument();
   });
 
@@ -67,6 +86,10 @@ describe("Jev chapter routes", () => {
     await expect(generateMetadata({ params: Promise.resolve({ chapter: "quickstart" }) })).resolves.toMatchObject({
       title: "从零开始调用 Jev",
       alternates: { canonical: "/topics/jev/quickstart" },
+    });
+    await expect(generateMetadata({ params: Promise.resolve({ chapter: "laya-reference-implementation" }) })).resolves.toMatchObject({
+      title: "Laya：一个可检查的决策模型实现",
+      alternates: { canonical: "/topics/jev/laya-reference-implementation" },
     });
     await expect(generateMetadata({ params: Promise.resolve({ chapter: "unknown" }) })).resolves.toEqual({});
     await expect(JevChapterPage({ params: Promise.resolve({ chapter: "unknown" }) })).rejects.toThrow("NEXT_NOT_FOUND");

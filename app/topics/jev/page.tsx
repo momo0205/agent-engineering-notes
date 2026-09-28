@@ -23,8 +23,8 @@ export default function JevTopicPage() {
         <dl className="topic-facts">
           <div><dt>研究状态</dt><dd>研究进行中</dd></div>
           <div><dt>跟踪版本</dt><dd><code>{jevModelVersion}</code></dd></div>
-          <div><dt>最近审阅</dt><dd>{jevReviewedAt}</dd></div>
-          <div><dt>本地验证</dt><dd>实验尚未开始</dd></div>
+          <div><dt>专题进度更新</dt><dd>{jevReviewedAt}</dd></div>
+          <div><dt>实验进度</dt><dd>小规模规则/分类器离线试跑已完成；正式对照评估和 Jev 在线实测尚未开始</dd></div>
         </dl>
         <a className="text-link" href={`/topics/jev/${jevChapters[0].slug}`}>
           从研究动机开始 <span aria-hidden="true">→</span>
@@ -51,7 +51,7 @@ export default function JevTopicPage() {
       <section className="topic-map" aria-labelledby="jev-map-title">
         <div className="section-heading">
           <h2 id="jev-map-title">研究与实践路径</h2>
-          <span>首发 6 章 · 持续更新</span>
+          <span>7 章 · 持续更新</span>
         </div>
         <div className="topic-grid">
           {jevChapters.map((chapter) => (

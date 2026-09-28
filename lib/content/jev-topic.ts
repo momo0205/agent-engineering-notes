@@ -4,6 +4,7 @@ import textContextReasoning from "../../content/topics/jev/text-context-reasonin
 import benchmarkAudit from "../../content/topics/jev/benchmark-audit.md?raw";
 import quickstart from "../../content/topics/jev/quickstart.md?raw";
 import experimentPlan from "../../content/topics/jev/experiment-plan.md?raw";
+import layaReferenceImplementation from "../../content/topics/jev/laya-reference-implementation.md?raw";
 
 export type EvidenceLevel =
   | "official-fact"
@@ -30,7 +31,7 @@ export type JevTopicChapter = {
   body: string;
 };
 
-export const jevReviewedAt = "2026-09-20";
+export const jevReviewedAt = "2026-09-28";
 export const jevModelVersion = "jev-1.13.0 / early access";
 
 export const jevChapters: readonly JevTopicChapter[] = [
@@ -42,7 +43,7 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 9,
     status: "research",
     evidenceLevels: ["official-fact", "vendor-claim", "provisional", "unresolved"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-28",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: whyJev,
@@ -55,7 +56,7 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 13,
     status: "research",
     evidenceLevels: ["official-fact", "vendor-claim", "provisional"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-20",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: capabilityBoundary,
@@ -68,7 +69,7 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 12,
     status: "research",
     evidenceLevels: ["official-fact", "vendor-claim", "provisional", "unresolved"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-20",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: textContextReasoning,
@@ -81,7 +82,7 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 14,
     status: "research",
     evidenceLevels: ["official-fact", "vendor-claim", "provisional", "unresolved"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-20",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: benchmarkAudit,
@@ -94,7 +95,7 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 15,
     status: "research",
     evidenceLevels: ["official-fact", "vendor-claim", "unresolved"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-20",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: quickstart,
@@ -107,10 +108,23 @@ export const jevChapters: readonly JevTopicChapter[] = [
     readingMinutes: 14,
     status: "experiment-pending",
     evidenceLevels: ["provisional", "unresolved"],
-    reviewedAt: jevReviewedAt,
+    reviewedAt: "2026-09-28",
     modelVersion: jevModelVersion,
     localExperiment: "not-started",
     body: experimentPlan,
+  },
+  {
+    slug: "laya-reference-implementation",
+    order: "07",
+    title: "Laya：一个可检查的决策模型实现",
+    summary: "沿着开源代码看类型化决策如何建立在 Transformer 编码器上，并审慎解读其基准、置信度和中文诊断。",
+    readingMinutes: 18,
+    status: "research",
+    evidenceLevels: ["official-fact", "provisional", "unresolved"],
+    reviewedAt: "2026-09-28",
+    modelVersion: "Laya 0.3.21 / Jev 1.13.0",
+    localExperiment: "not-started",
+    body: layaReferenceImplementation,
   },
 ] as const;
 

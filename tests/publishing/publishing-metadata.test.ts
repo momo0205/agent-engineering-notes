@@ -137,6 +137,7 @@ describe("publishing metadata", () => {
       { url: "https://notes.example.com/topics/jev/benchmark-audit" },
       { url: "https://notes.example.com/topics/jev/quickstart" },
       { url: "https://notes.example.com/topics/jev/experiment-plan" },
+      { url: "https://notes.example.com/topics/jev/laya-reference-implementation" },
       { url: "https://notes.example.com/projects/agent-evidence-lab" },
       { url: "https://notes.example.com/about" },
       {
@@ -246,6 +247,7 @@ describe("publishing metadata", () => {
       ["benchmark-audit", "审计 193.6×、444.6× 与 67.8%"],
       ["quickstart", "从零开始调用 Jev"],
       ["experiment-plan", "我们准备怎样验证它"],
+      ["laya-reference-implementation", "Laya：一个可检查的决策模型实现"],
     ] as const;
     const routes = [
       [overview.metadata, "Jev：无文本决策模型研究", "/topics/jev"],
@@ -256,7 +258,7 @@ describe("publishing metadata", () => {
       ] as const)),
     ] as const;
 
-    expect([...new Set(routes.map(([metadata]) => metadata.title))]).toHaveLength(7);
+    expect([...new Set(routes.map(([metadata]) => metadata.title))]).toHaveLength(8);
     for (const [metadata, title, canonical] of routes) {
       expect(metadata).toMatchObject({ title, alternates: { canonical } });
     }

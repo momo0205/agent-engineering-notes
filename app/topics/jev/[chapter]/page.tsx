@@ -72,7 +72,7 @@ export default async function JevChapterPage({ params }: Props) {
           <div><dt>模型版本</dt><dd><code>{chapter.modelVersion}</code></dd></div>
         </dl>
         {chapter.localExperiment === "not-started" ? (
-          <p role="status"><strong>实验尚未开始</strong>：本章没有把计划或厂商结果写成本地验证。</p>
+          <p role="status"><strong>本章尚无对应模型的本地实测</strong>：计划、示例或离线规则/分类器试跑不代表该模型已在实验台验证。</p>
         ) : null}
       </section>
 

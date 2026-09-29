@@ -24,7 +24,7 @@ export default function JevTopicPage() {
           <div><dt>研究状态</dt><dd>研究进行中</dd></div>
           <div><dt>跟踪版本</dt><dd><code>{jevModelVersion}</code></dd></div>
           <div><dt>专题进度更新</dt><dd>{jevReviewedAt}</dd></div>
-          <div><dt>实验进度</dt><dd>小规模规则/分类器离线试跑已完成；正式对照评估和 Jev 在线实测尚未开始</dd></div>
+          <div><dt>实验进度</dt><dd>规则/分类器离线试跑已完成；Laya 已完成首轮校准集本地复现（n=20，探索性）；正式对照评估和 Jev 在线实测尚未开始</dd></div>
         </dl>
         <a className="text-link" href={`/topics/jev/${jevChapters[0].slug}`}>
           从研究动机开始 <span aria-hidden="true">→</span>

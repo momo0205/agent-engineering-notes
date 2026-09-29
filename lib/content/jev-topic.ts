@@ -31,7 +31,7 @@ export type JevTopicChapter = {
   body: string;
 };
 
-export const jevReviewedAt = "2026-09-28";
+export const jevReviewedAt = "2026-09-29";
 export const jevModelVersion = "jev-1.13.0 / early access";
 
 export const jevChapters: readonly JevTopicChapter[] = [
@@ -117,13 +117,13 @@ export const jevChapters: readonly JevTopicChapter[] = [
     slug: "laya-reference-implementation",
     order: "07",
     title: "Laya：一个可检查的决策模型实现",
-    summary: "沿着开源代码看类型化决策如何建立在 Transformer 编码器上，并审慎解读其基准、置信度和中文诊断。",
+    summary: "沿着开源代码与首轮本地校准实验，理解类型化决策、概率边界和中文输入风险。",
     readingMinutes: 18,
     status: "research",
-    evidenceLevels: ["official-fact", "provisional", "unresolved"],
-    reviewedAt: "2026-09-28",
+    evidenceLevels: ["official-fact", "local-reproduction", "provisional", "unresolved"],
+    reviewedAt: "2026-09-29",
     modelVersion: "Laya 0.3.21 / Jev 1.13.0",
-    localExperiment: "not-started",
+    localExperiment: "completed",
     body: layaReferenceImplementation,
   },
 ] as const;

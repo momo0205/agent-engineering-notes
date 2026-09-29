@@ -9,7 +9,7 @@ describe("Jev research topic", () => {
     expect(screen.getAllByRole("article")).toHaveLength(7);
     expect(screen.getByText(/研究进行中/)).toBeInTheDocument();
     expect(screen.getByText("专题进度更新")).toBeInTheDocument();
-    expect(screen.getByText(/小规模规则\/分类器离线试跑已完成；正式对照评估和 Jev 在线实测尚未开始/)).toBeInTheDocument();
+    expect(screen.getByText(/Laya.*校准集.*探索性.*正式对照评估和 Jev 在线实测尚未开始/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Laya：一个可检查的决策模型实现" })).toHaveAttribute(
       "href", "/topics/jev/laya-reference-implementation",
     );

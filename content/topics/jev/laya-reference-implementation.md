@@ -91,7 +91,31 @@ print(answer["choice"], answer["probabilities"])
 
 Laya 提供 Python 包。可以在隔离环境安装后运行上面的最小程序；首次实际推理通常需要从模型仓库取得 checkpoint，运行时延迟也受机器、模型是否已加载、输入长度和批处理影响。记录实验时至少冻结 Laya 版本、checkpoint/revision、硬件、原始输入、候选项定义和数据切分，不能只记最终 accuracy。
 
-适合我们的第一个小实验不是追逐更大的分数，而是把现有路由任务整理成一小批人工核对样本，先比较规则、普通分类器与 Laya，再分开查看：总体准确率、每类 precision/recall、Brier、校准曲线、低置信拒答后的 coverage、P50/P95 延迟和失败案例。开发集用于改问题与阈值，保留测试集只在配置冻结后使用。若 checkpoint 要用本地任务微调，微调样本与测试集必须按来源/模板分组隔离，不能把近重复样本拆进两边。
+我们的下一步不是追逐更大的分数，而是补足实验复现性：固定同一批人工核对样本，比较规则、普通分类器与 Laya，再分别查看总体准确率、每类 precision/recall、Brier、校准曲线、低置信拒答后的 coverage 和失败案例。开发集用于改问题与阈值，校准集用于探索阈值；Laya 尚未使用保留测试集。若 checkpoint 要用本地任务微调，微调样本与测试集必须按来源/模板分组隔离，不能把近重复样本拆进两边。
+
+## 我们的第一轮本地复现：只看校准集
+
+我们把 Laya 接入独立的 [Jev Decision Lab](https://github.com/momo0205/jev-decision-lab)，复用固定的中文路由数据和统一评估报告。运行使用 Laya `0.3.21`、`convaiinnovations/laya-multilingual` checkpoint revision `e4e9ddf21a7b1903b7acffd8814ad4307bf63a67`，问题要求模型在 `search`、`code`、`database`、`human_review` 四个路由中选择。没有调用 Jev 或 DeepSeek API，也没有在 Laya 这轮实验中运行 `test` split。
+
+为了先检查读者熟悉的基线，下面并列的是同一数据哈希、同一 20 条校准样本上的早期离线结果。它们来自不同时间的独立 run，不是冻结后的正式 head-to-head；小样本、合成数据和校准集用途都限制了结论强度。
+
+| Provider | 校准集准确率 | Coverage | 高风险误批准 | Brier |
+| --- | ---: | ---: | ---: | ---: |
+| 规则 | 15/20（75%） | 100% | 0/8 | 不提供概率 |
+| TF-IDF + Logistic Regression | 20/20（100%） | 100% | 0/8 | 0.2378 |
+| Laya multilingual | 14/20（70%） | 100% | 3/8 | 0.4260 |
+
+规则基线的 run ID 是 `20260928T085020Z-rules-calibration`，分类器是 `20260928T085005Z-tfidf-logreg-calibration`；两者来自代码 commit [`845b5fe`](https://github.com/momo0205/jev-decision-lab/commit/845b5fe8a266c69c51c166dfa24b633e80f48158)。Laya 对应 `20260929T082350Z-laya-calibration`，运行代码已并入 [`464a2c5`](https://github.com/momo0205/jev-decision-lab/commit/464a2c5d4c8b58c69d9f67eea251b478ca375bb9)。三者 manifest 记录的 dataset SHA-256 相同。
+
+这里的 20 条样本不是独立泛化测试。尤其是分类器的 20/20，只描述它在本校准切分上的观测表现，不能代表上线准确率；Laya 的 14/20 也不能外推成“Laya 中文准确率只有 70%”。`coverage=100%` 仅表示没有设置拒答门槛、每条样本都有输出，不表示所有输出都正确。Laya 把 8 条人工复核样本中的 3 条错误交给了 `code` 路径，这是当前小实验最需要追查的风险信号。
+
+Laya 这次运行的多分类 Brier score 是 `0.4260`；它记录预测分布与标签的差异，不是“模型有 42.6% 的错误概率”，更不是正确率保证。报告观察到推理延迟 P50/P95 为约 `17.2/53.2 ms`，但不含模型加载或首次权重下载，且运行 manifest 没有记录实际设备，所以不能拿它直接对比远程 Jev 或 DeepSeek 的端到端耗时。美元 API 成本标记为未知（`null`），也没有估算电力与硬件成本。
+
+这次可追溯运行记录为 `20260929T082350Z-laya-calibration`：代码 commit [`464a2c5`](https://github.com/momo0205/jev-decision-lab/commit/464a2c5d4c8b58c69d9f67eea251b478ca375bb9)，数据集 SHA-256 为 `0d93dd32608ea1a3c8b98453e28416d0bb188c6acd5fd7211628132b3cee7042`。当时环境为 Python `3.12.14`、Laya `0.3.21`、PyTorch `2.14.0` 和 Transformers `5.17.0`；目前报告已记录代码、数据和 checkpoint revision，但尚未把这些运行时版本与实际推理设备自动写入 manifest，这是下一轮实验基础设施应补的追溯能力。
+
+还有一个值得保留的复现差异：更早的一次手工 Laya 试跑记录为 `16/20`、高风险误批准 `2/8`。它没有保存完整的可执行请求构造过程；在同一可见数据哈希和 checkpoint 上，当前固定 Provider 的 calibration run 得到的是 `14/20`、`3/8`。因此旧结果暂记为**未复现**，不能挑选较高分数发布，也还不能确定差异来自哪项输入构造细节。
+
+复现命令和适配器实现见 [实验仓库 README](https://github.com/momo0205/jev-decision-lab/blob/464a2c5d4c8b58c69d9f67eea251b478ca375bb9/README.md) 与 [`LayaProvider`](https://github.com/momo0205/jev-decision-lab/blob/464a2c5d4c8b58c69d9f67eea251b478ca375bb9/src/jev_lab/providers/laya.py)。配置和评估协议冻结之前，以上结果只用于发现错误模式；它不说明 Laya 与 Jev 内部相同，也不构成对任何模型的正式排名。
 
 这个实验仍不接入现有业务，也不把 Laya 结果外推为 Jev 结论。它的作用是练习如何验证一种结构化决策方案，并帮助我们识别当前评估框架的盲区。
 

@@ -39,12 +39,16 @@ describe("Jev chapter routes", () => {
     expect(screen.getByText("证据级别")).toBeInTheDocument();
     expect(screen.getByText("最近审阅")).toBeInTheDocument();
     expect(screen.getByText("模型版本")).toBeInTheDocument();
-    expect(screen.getAllByText(/本章尚无对应模型的本地实测/).length).toBeGreaterThan(0);
+    if (chapter.localExperiment === "not-started") {
+      expect(screen.getByText(/本章尚无对应模型的本地实测/)).toBeInTheDocument();
+    } else {
+      expect(screen.queryByText(/本章尚无对应模型的本地实测/)).not.toBeInTheDocument();
+    }
   });
 
   it("renders the Laya explanation as formatted article content", async () => {
     await renderRoute("laya-reference-implementation");
-    expect(screen.getAllByRole("table")).toHaveLength(2);
+    expect(screen.getAllByRole("table")).toHaveLength(3);
     expect(screen.getByRole("link", { name: /Laya 源码：laya\/common\.py/ })).toHaveAttribute(
       "href", "https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/laya/common.py",
     );

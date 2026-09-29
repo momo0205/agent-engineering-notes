@@ -19,7 +19,7 @@ const expectedSlugs = [
 describe("Jev research topic registry", () => {
   it("publishes the research chapters in order", () => {
     expect(jevChapters.map(({ slug }) => slug)).toEqual(expectedSlugs);
-    expect(jevReviewedAt).toBe("2026-09-28");
+    expect(jevReviewedAt).toBe("2026-09-29");
     expect(jevModelVersion).toMatch(/jev/i);
     expect(jevChapter("why-jev")?.order).toBe("01");
     expect(jevChapter("missing")).toBeUndefined();
@@ -58,7 +58,8 @@ describe("Jev research topic registry", () => {
   it("treats Laya as an inspectable reference, not evidence about Jev internals", () => {
     const chapter = jevChapter("laya-reference-implementation")!;
     expect(chapter.title).toBe("Laya：一个可检查的决策模型实现");
-    expect(chapter.localExperiment).toBe("not-started");
+    expect(chapter.localExperiment).toBe("completed");
+    expect(chapter.evidenceLevels).toContain("local-reproduction");
     expect(chapter.body).toContain("双向 Transformer 编码器");
     expect(chapter.body).toContain("`choice`");
     expect(chapter.body).toContain("0.766");
@@ -74,6 +75,15 @@ describe("Jev research topic registry", () => {
     expect(chapter.body).toContain("20/64");
     expect(chapter.body).toContain("64/64");
     expect(chapter.body).toContain("不是留出测试集");
+    expect(chapter.body).toContain("20260929T082350Z-laya-calibration");
+    expect(chapter.body).toContain("20260928T085020Z-rules-calibration");
+    expect(chapter.body).toContain("20260928T085005Z-tfidf-logreg-calibration");
+    expect(chapter.body).toContain("14/20");
+    expect(chapter.body).toContain("3/8");
+    expect(chapter.body).toContain("464a2c5d4c8b58c69d9f67eea251b478ca375bb9");
+    expect(chapter.body).toContain("0d93dd32608ea1a3c8b98453e28416d0bb188c6acd5fd7211628132b3cee7042");
+    expect(chapter.body).toContain("16/20");
+    expect(chapter.body).toContain("未复现");
     expect(chapter.body).toContain("https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/research/benchmarks/zh_short_commands/README.md");
     expect(chapter.body).toContain("https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/research/benchmarks/feishu_zh/README.md");
   });

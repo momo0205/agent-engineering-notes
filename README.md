@@ -62,6 +62,12 @@ draft -> review -> published
 
 不要通过修改查询逻辑绕过状态门。审核证据和脱敏记录保存在 `docs/review/`。
 
+## Research topics
+
+`/topics` groups the research notebooks into Agent engineering and algorithms/models, with local metadata search. The original Harness, algorithm and Jev routes remain available; the REA topic lives at `/topics/rea`.
+
+Topic Markdown, chapter metadata and route pages are versioned together. REA source facts are pinned to a commit, while tutorials separately name their released package baseline. Source review, engineering interpretation and local execution must remain distinguishable. Append later experiments with their versions and evidence; do not silently turn a pending tutorial into a completed reproduction. The REA review record is `docs/review/2026-10-13-rea-topic-review.md`.
+
 ## Architecture
 
 - React/Vinext：页面、路由和 Cloudflare Worker-compatible 构建；

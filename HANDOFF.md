@@ -1,5 +1,13 @@
 # Handoff
 
+## Research-directory update — 2026-10-13
+
+The main navigation now leads to `/topics`, a searchable grouped directory. Agent engineering contains Harness and REA; algorithms/models contains the existing algorithm notebook and Jev. Original topic URLs remain available.
+
+REA has six chapters at `/topics/rea`: positioning, source architecture, Evidence/verification, engineering use cases, hands-on learning and integration boundaries. Source review is pinned to `d13c9f84`; release-based examples use npm 6.4.0 / `a56f7bb6`. The first source and test-design audit is complete; REA tutorials and external engines have not been locally run. Future work should append controlled self-owned JavaScript and native-function experiments with versions, observations, unknowns and independent tests.
+
+Read `docs/review/2026-10-13-rea-topic-review.md` for the current review boundary. Older startup and security instructions below still describe the original site; confirm the actual Git state before treating their historical progress as current.
+
 ## Current outcome
 
 `Agent 工程笔记` 已完成首发站点的核心实现：文章模型、安全 Markdown、文章路由、批准的首页视觉、学习路线、项目页、关于页、静态搜索、公开内容安全门禁、CI、RSS、sitemap、robots 和社交分享图。

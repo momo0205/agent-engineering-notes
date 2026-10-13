@@ -258,8 +258,10 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .topic-grid article:nth-child(3) { background: var(--card-warm); }
 .topic-grid article:nth-child(4) { background: #e7e5df; }
 .topic-grid article > p:first-child { margin: 0; color: var(--card-meta); font-family: var(--font-mono); font-size: 11px; }
-.topic-grid h2 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
-.topic-grid h2 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.topic-grid h2, .topic-grid h3 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
+.topic-grid h2 + p, .topic-grid h3 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.topic-group-intro { max-width: 750px; margin: 0 0 24px; color: var(--muted); font-size: 15px; line-height: 1.8; }
+.topic-search-status { color: var(--muted); font-size: 13px; }
 .topic-grid article > a { margin-top: auto; width: fit-content; padding-bottom: 2px; border-bottom: 1px solid currentColor; font-size: 12px; font-weight: 650; }
 .algorithm-course-grid h3 { margin: 22px 0 0; font-size: 23px; line-height: 1.35; letter-spacing: -.035em; }
 .algorithm-course-grid h3 + p { margin: 18px 0 26px; color: var(--muted); font-size: 14px; line-height: 1.75; }

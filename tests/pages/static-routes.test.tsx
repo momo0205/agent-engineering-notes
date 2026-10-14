@@ -19,12 +19,15 @@ describe("static public routes", () => {
     render(<ProjectPage />);
 
     expect(screen.getByRole("heading", { name: "Agent Evidence Lab" })).toBeInTheDocument();
-    expect(screen.getByText(/M0–M2/)).toBeInTheDocument();
-    expect(screen.getByText(/当前：M3/)).toBeInTheDocument();
-    expect(screen.getByText(/固定测试集 5\/5/)).toBeInTheDocument();
-    for (const item of ["真实 Token/费用预算扣减", "通用工具异常恢复", "对外运行与恢复 API"]) {
-      expect(screen.getByText(item)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "M0–M3 已完成限定范围验收" })).toBeInTheDocument();
+    for (const name of ["代码与模型分别负责什么", "已经验证的能力", "当前真实能力边界", "仍待完成", "下一条主线：问题驱动、主动补证据"]) {
+      expect(screen.getByRole("heading", { name })).toBeInTheDocument();
     }
+    expect(screen.getByText(/完整 M4\/M5 仍未关闭/)).toBeInTheDocument();
+    expect(screen.getByText(/引用可追溯，不代表结论已独立验证/)).toBeInTheDocument();
+    expect(screen.getByText(/具体规则细节标为 PARTIAL/)).toBeInTheDocument();
+    expect(screen.getByText(/实际实验运行数仍为 0/)).toBeInTheDocument();
+    expect(screen.getByText(/这个方向尚未实施/)).toBeInTheDocument();
     expect(screen.getByText(/不能外推为生产可靠性/)).toBeInTheDocument();
   });
 

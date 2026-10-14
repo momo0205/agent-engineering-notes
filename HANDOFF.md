@@ -1,5 +1,13 @@
 # Handoff
 
+## Agent Evidence Lab project update — 2026-10-14
+
+The existing `/projects/agent-evidence-lab` page now describes the research-Agent goal, code/model responsibilities, verified local capabilities, the saved-source review sample, remaining work and the next problem-driven evidence-reading direction. The next direction is proposed, not implemented. Full M4/M5 and long-running server deployment remain incomplete.
+
+Owner authorization covers this project-page update and publication; it does not extend to rewriting historical articles or other project pages. PR #11 was independently rechecked as merged on 2026-10-14, with test/image CI successful. The latest review sample still has zero experiment runs, and its sandbox rule details remain PARTIAL. Read `docs/review/2026-10-14-agent-evidence-lab-project-review.md` for the source and publication boundary.
+
+Project-page checks: full verify (244 tests plus 5+5 REA example cases), typecheck and changed-file lint pass; desktop/mobile preview is readable without horizontal overflow. Full lint still reports three pre-existing internal-anchor errors on the REA topic page after excluding local worktrees. These were reproduced from the unchanged HEAD version and left outside this update's scope.
+
 ## Research-directory update — 2026-10-13
 
 The main navigation now leads to `/topics`, a searchable grouped directory. Agent engineering contains Harness and REA; algorithms/models contains the existing algorithm notebook and Jev. Original topic URLs remain available.

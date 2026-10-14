@@ -41,7 +41,7 @@ export default async function ReaChapterPage({ params }: Props) {
         </dl>
         <p role="status">已完成最小 JavaScript CLI 分析与行为对照；外部原生分析引擎尚未本机实跑。实际小样本、待执行练习与固定源码分别标注。</p>
       </section>
-      <ArticleBody html={renderMarkdown(chapter.body)} />
+      <ArticleBody profile="rea" html={renderMarkdown(chapter.body)} />
       <nav className="topic-note" aria-label="章节导航">
         <strong>继续阅读</strong>
         <p>

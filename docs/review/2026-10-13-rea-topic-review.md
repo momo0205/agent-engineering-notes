@@ -52,3 +52,19 @@ Public reproducible fixtures live under examples/rea-export-investigation. Posit
 Final factual review, full website checks and deployment must still complete before claiming this candidate published.
 
 The final read-only walkthrough review verified article counts, digests and the exact unknown/pairing result against raw JSON, checked fixture-byte hashes and reproduced all three behavioral outcomes. No Critical finding remained. One Important publication-risk finding was fixed: chapter commands now use ignored rea-output paths consistently with the README instead of unscanned repository-root JSON files. A subsequent git check-ignore confirmed all four output paths. Positive fixtures and the 235-test website suite passed; final packaging still runs the current scans and production build before source publication.
+
+## 2026-10-14 narrative and reading-design correction
+
+After reading the topic, the owner rejected the vague export-change framing as the six-chapter research spine. The owner approved separating the general investigation method from the known-answer sample, deferring selection of a full application case, retaining the actual practice record, and improving REA-only tables and diagrams. The current correction updates all six chapters and the overview consistently. The previous fictional Electron task is no longer presented as their shared investigation.
+
+The approved visual direction preserves the existing paper background and blue/green/warm muted surfaces. Data comparisons remain semantic tables with padded cells, headers, row separation and keyboard-focusable local overflow regions. A long tool catalog becomes grouped prose. Three authored, accessible figures explain responsibilities, the analysis-to-Evidence pipeline and independent validation. They are conceptual diagrams, not executed traces or a hierarchy of confidence scores.
+
+Implementation keeps the existing Markdown sanitizer unchanged and keeps HTML insertion inside ArticleBody. The optional REA reading profile recognizes only three registered whole-paragraph diagram markers; markers in code and unknown tokens remain text. Other article profiles retain their original rendering. The diagrams use native text, CSS and SVG connectors with no image service, third-party chart renderer or runtime model call.
+
+TDD first reproduced five missing-feature failures, then all seven new reading-profile tests passed. The full website suite passed 242 tests; the unchanged positive JavaScript fixture matrix passed ten case executions. Typecheck, content scanning, link checking and production build are checked separately before source packaging.
+
+Local browser review at a 390-pixel viewport found no page-level horizontal overflow on the three figure chapters (document width 375). Wide tables remain inside their 329-pixel, focusable scroll regions; a mobile swipe hint makes this affordance visible. Diagram text reflows instead of shrinking as a bitmap. A 1280-pixel desktop check confirmed the horizontal responsibility diagram within the 760-pixel reading column. Temporary viewport overrides are reset at handoff. These are website checks, not new REA engine or application experiments.
+
+Read-only implementation review and native publication are completed separately; this record does not predeclare either outcome.
+
+The fresh-context read-only reviewer completed this correction and found no Critical, Important or Minor issues. The reviewer independently ran the full 242-test suite and diff whitespace check, and checked the scoped rendering, unchanged sanitizer and conceptual-diagram claims. Browser geometry, actual assistive-technology behavior, broader nested diagram syntax, old upstream claims and publication were explicitly excluded from that review rather than silently implied to pass. Native publication remains a subsequent step.

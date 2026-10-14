@@ -27,7 +27,7 @@ export default function ReaTopicPage() {
         <p className="eyebrow">Research question</p>
         <h2 id="rea-question">Agent 怎样把观察变成可信的工程结论？</h2>
         <p>分析工具取得的事实、静态推断、模型解释和重建测试，各自能证明什么？REA 提供了一套可以沿源码检查的案例。</p>
-        <p>六章以一个教学调查串联：取消导出为什么被当成成功？先用自有 JavaScript 样本实际分析与测试，再解释怎样扩展到 Electron、原生函数和其他工程任务。完整 Electron 场景仍是设计；最小样本的 Mac 失败、Linux 成功和静态 unknown 都如实保留。</p>
+        <p>六章沿“定位与分工 → 源码架构 → 证据判断 → 工程用途 → 入门实践 → 接入决策”逐步展开。完整应用案例留待后续选题；现有 JavaScript 实跑仅作为实践章的小样本练习，保留 Mac 失败、Linux 成功和静态 unknown，不将它当作整个专题的贯穿案例。</p>
       </section>
       <section className="topic-map" aria-labelledby="rea-chapters">
         <div className="section-heading"><h2 id="rea-chapters">研究与实践路径</h2><span>6 章 · 持续更新</span></div>

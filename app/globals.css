@@ -234,6 +234,64 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .article-body hr { margin: 3em 0; border: 0; border-top: 1px solid var(--line); }
 .article-body em { color: var(--muted); }
 
+/* REA reading profile: keep other article and topic layouts unchanged. */
+.rea-reading-body { line-height: 1.95; }
+.rea-reading-body h4 { margin: 1.9em 0 .7em; color: #394b5b; font-size: 17px; line-height: 1.6; font-weight: 650; }
+.rea-reading-body .rea-prose-fragment:first-child > :first-child { margin-top: 0; }
+.rea-reading-body .rea-table-wrap { margin: 2em 0; overflow-x: auto; border: 1px solid #d5d9d7; border-radius: 13px; background: #fafaf7; scrollbar-width: thin; }
+.rea-reading-body .rea-table-wrap:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
+.rea-reading-body table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.75; }
+.rea-reading-body .rea-table-columns-3 table { min-width: 540px; }
+.rea-reading-body .rea-table-columns-4 table { min-width: 640px; }
+.rea-reading-body th, .rea-reading-body td { padding: 17px 19px; text-align: left; vertical-align: top; }
+.rea-reading-body th { background: #e8eeeb; color: #283e35; font-size: 13px; font-weight: 650; line-height: 1.6; }
+.rea-reading-body td { border-top: 1px solid #e0e3de; }
+.rea-reading-body tbody tr:nth-child(even) { background: #f1f3ef; }
+.rea-reading-body td:first-child { color: #333f46; font-weight: 550; }
+.rea-reading-body td code { box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere; }
+.rea-reading-body .rea-diagram { margin: 2.4em 0; padding: 28px; border: 1px solid #d6d9de; border-radius: 18px; background: #f0f2f5; }
+.rea-reading-body .rea-diagram-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.rea-reading-body .rea-diagram-heading > span { flex: none; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; color: #5a6682; }
+.rea-reading-body .rea-diagram-heading > strong { font-size: 20px; font-weight: 650; line-height: 1.5; }
+.rea-reading-body .rea-diagram-introduction { margin-bottom: 24px; color: #59616c; font-size: 14px; line-height: 1.8; }
+.rea-reading-body .rea-diagram-flow { display: flex; gap: 24px; margin: 0; padding: 0; list-style: none; }
+.rea-reading-body .rea-diagram-step { position: relative; flex: 1; min-width: 0; margin: 0; padding: 17px 15px; border: 1px solid #d3d9e1; border-radius: 11px; }
+.rea-reading-body .rea-diagram-step--blue { background: #e2e8f4; }
+.rea-reading-body .rea-diagram-step--green { background: #e1eae5; border-color: #cfdcd3; }
+.rea-reading-body .rea-diagram-step--warm { background: #eee6df; border-color: #dfd5cc; }
+.rea-reading-body .rea-diagram-number { display: block; margin-bottom: 9px; font-family: var(--font-mono); font-size: 11px; color: #626d7a; }
+.rea-reading-body .rea-diagram-step strong { display: block; font-size: 15px; line-height: 1.6; }
+.rea-reading-body .rea-diagram-step p { margin: 8px 0 0; color: #4e5862; font-size: 13px; line-height: 1.8; }
+.rea-reading-body .rea-diagram-connector { position: absolute; top: 33px; right: -25px; color: #7c8798; }
+.rea-reading-body .rea-diagram-note { margin: 22px 0 0; padding: 14px 16px; border-left: 2px solid #92a3bd; background: #e5e9ee; color: #475568; font-size: 13px; line-height: 1.8; }
+.rea-reading-body .rea-diagram figcaption { margin-top: 20px; padding-top: 16px; border-top: 1px solid #d6dbe1; color: #626a76; font-size: 12px; line-height: 1.8; }
+.rea-reading-body .rea-diagram--pipeline .rea-diagram-flow { display: grid; gap: 25px; }
+.rea-reading-body .rea-diagram--pipeline .rea-diagram-step { display: grid; grid-template-columns: 27px 150px 1fr; align-items: baseline; gap: 12px; padding: 16px 20px; }
+.rea-reading-body .rea-diagram--pipeline .rea-diagram-number, .rea-reading-body .rea-diagram--pipeline .rea-diagram-step p { margin: 0; }
+.rea-reading-body .rea-diagram--pipeline .rea-diagram-connector { top: auto; bottom: -22px; left: 22px; right: auto; transform: rotate(90deg); }
+.rea-reading-body .rea-diagram-outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 14px 0 0; padding: 0; list-style: none; }
+.rea-reading-body .rea-diagram-outcomes li { margin: 0; padding: 10px 12px; border: 1px solid #d6dbe1; border-radius: 8px; background: #f8f9f8; color: #505e6d; font-size: 12px; line-height: 1.7; }
+@media (max-width: 760px) {
+  .rea-reading-body .rea-diagram { padding: 21px; }
+  .rea-reading-body .rea-diagram-heading { display: block; }
+  .rea-reading-body .rea-diagram-heading > span { display: block; margin-bottom: 7px; }
+  .rea-reading-body .rea-diagram-heading > strong { font-size: 19px; }
+  .rea-reading-body .rea-diagram-flow { display: grid; gap: 25px; }
+  .rea-reading-body .rea-diagram-step { padding: 16px 18px; }
+  .rea-reading-body .rea-diagram-number { float: left; margin: 3px 12px 0 0; }
+  .rea-reading-body .rea-diagram-step p { margin: 6px 0 0; font-size: 14px; }
+  .rea-reading-body .rea-diagram-connector { top: auto; bottom: -22px; left: 20px; right: auto; transform: rotate(90deg); }
+  .rea-reading-body .rea-diagram--pipeline .rea-diagram-step { display: block; padding: 16px 18px; }
+  .rea-reading-body .rea-diagram--pipeline .rea-diagram-step p { margin-top: 6px; }
+  .rea-reading-body .rea-diagram--pipeline .rea-diagram-number { margin: 3px 12px 0 0; }
+  .rea-reading-body .rea-diagram-outcomes { grid-template-columns: 1fr; }
+  .rea-reading-body th, .rea-reading-body td { padding: 14px 16px; }
+}
+@media (max-width: 600px) {
+  .rea-reading-body .rea-table-columns-3::before,
+  .rea-reading-body .rea-table-columns-4::before { content: "左右滑动查看完整表格"; display: block; position: sticky; left: 0; padding: 8px 15px; border-bottom: 1px solid #d5d9d7; background: #edf1ed; color: #59695e; font-size: 11px; line-height: 1.7; }
+}
+
 .topic-page { padding-bottom: 72px; }
 .topic-hero {
   margin: 30px 30px 0;

@@ -8,26 +8,22 @@ REA（Reverse Engineer Anything）是一套**面向 AI Agent 的逆向工程工�
 
 本专题的源码审查绑定 2026-10-13 的[固定源码 d13c9f84](https://github.com/morluto/rea/tree/d13c9f840d36a321a56917e75c48afcb8d72920e)。当时公开发布基线为 [rea-agents 6.4.0](https://github.com/morluto/rea/releases/tag/rea-agents-6.4.0)，发布提交为 `a56f7bb6`。两棵源码树不同。2026-10-14 又完成了固定发布版的小型 JavaScript CLI 分析、返回形状比较与行为对照；Mac 的分析启动失败和 Linux 的成功分别记录在[实践章](/topics/rea/hands-on)。原生引擎与真实应用实验仍未完成。
 
-## 六章共同追踪的问题：导出为什么变了
+## 本专题研究什么，怎样往下读
 
-为了避免把专题写成互不相连的工具说明，六章沿用一个调查案例：**一个自有或明确授权的 Electron 桌面工具升级后，用户取消导出，界面却显示成功。怎样找出有关实现，并验证自己的修复或兼容实现？**
+本专题的主线是：**面对没有完整源码的软件，怎样借助 REA 和大模型，从产物与行为中理解一个功能，再验证这种理解是否可靠。**
 
-这是教学用的假设案例，不是我们已经发现或复现的真实产品缺陷。假设手中有新旧安装包、可操作的测试环境和少量已知操作，没有完整源码。调查不从“还原整个应用”开始，而是从一个可以重现、可以判断对错的行为开始。
+这是研究方向，不是一个已经选定并完成的真实逆向任务。具体的完整应用案例留待后续选题；当前先把工具原理、分析材料和验证方法讲清楚，不用一个人为设计的小故障代表 REA 的全部能力。
 
-第五章把其中“取消返回被当成成功”的一小部分做成了自有、可复现的 JavaScript 样本，并真正运行了分析和测试。这个样本没有 Electron 进程、真实 IPC 或文件写入；它让我们先观察一条最小调查链，不冒充整个桌面应用案例已经跑通。
+六章按依赖关系回答六个问题：
 
-```text
-问题：取消导出为什么显示成功？
-  → 固定新旧产物、版本、哈希与测试环境
-  → 从界面文案或 IPC channel 找静态候选
-  → 追踪 renderer → preload → main → 文件操作
-  → 记录尚未确定的分支、输入和 native 边界
-  → 在授权场景中取得取消、成功、失败的运行观察
-  → 宿主大模型整理证据，提出解释或候选实现
-  → 独立测试逐条验收，留下未解决的问题
-```
+1. **定位与分工**：逆向任务需要哪些材料？REA、大模型和宿主各自负责什么？
+2. **源码架构**：一项请求怎样经过契约、工作流和分析器，成为模型可以继续查询的证据？
+3. **证据判断**：静态关系、运行观察、模型解释和有限测试，分别能支持什么结论？
+4. **工程用途**：哪些任务确实缺少产物或运行信息，值得为此准备工具？
+5. **入门实践**：用可控小样本检查工具实际返回什么，再用行为测试补充判断。
+6. **接入决策**：结合平台、权限、成本与残留未知，决定是否接入现有系统。
 
-第一章确定工具与 AI 的分工；第二章解释事实怎样从请求进入上下文；第三章判断证据能证明什么；第四章把调查改写成工程任务；第五章先用小实验练习这一流程；第六章决定是否值得接入、以什么权限接入。最终交付物是有来源的行为说明、有限的验证结果和未知项，不是一篇听起来完整的猜测。
+第五章保留了实际运行过的 JavaScript 结果处理样本。它是已知答案的白盒入门练习，没有真实 Electron 进程、IPC 或文件写入，不承担整个专题的贯穿案例，也不代表已经恢复某款应用。
 
 ## “逆向”究竟要逆到哪一层
 
@@ -41,19 +37,7 @@ REA（Reverse Engineer Anything）是一套**面向 AI Agent 的逆向工程工�
 
 REA 的运行入口创建分析会话，再启动 MCP 服务。宿主 Agent 根据用户的问题选择工具，读取工具返回的观察，再决定下一步调查。审查到的核心产品路径没有独立的模型推理与自动工具选择循环；MCP prompt 的实现也只是返回给宿主的任务文本。
 
-```text
-人提出一个具体问题
-    ↓
-宿主 Agent：模型 + 上下文 + 工具选择循环
-    ↓ MCP 调用
-REA：参数契约、目标绑定、分析工作流、证据记录
-    ↓
-静态解析器 / 本地分析引擎 / 运行时观察器
-    ↓
-Evidence：结果、来源、限制、未知项
-    ↓
-Agent 继续调查、解释，或编写待验证的实现
-```
+[rea-diagram:roles]
 
 因此，REA 很适合用来理解 Agent 的工具层：模型提出调查方向，工具取得新的事实，上下文保留这些事实，宿主循环继续行动。更强的模型可能提出更好的问题，但它仍然受工具实际观察范围限制。[运行入口](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/main.ts#L50)、[Prompt 返回实现](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/server/registerPrompts.ts#L100)
 
@@ -61,9 +45,9 @@ Agent 继续调查、解释，或编写待验证的实现
 
 ### 模型有用在哪里，又不负责什么
 
-在导出案例中，大模型可以把“取消仍显示成功”的描述改写成调查步骤；从字符串、模块和 IPC 关系中选下一条查询；比较不同证据中的命名与结构；解释一段伪代码；编写候选实现与测试草案。这些任务需要语义理解和跨工具组织，适合让模型辅助。
+大模型可以把用户描述改写成调查步骤；从字符串、模块和接口关系中选择下一条查询；比较不同材料中的命名与结构；解释伪代码；编写候选实现与测试草案。这些任务需要语义理解和跨工具组织，适合让模型辅助。
 
-但模型不能凭命名决定某条调用已经发生，也不能替代分析器读取目标字节。它提出的“取消结果被当成正常返回”只是待验证假设。实际消息形状、观察到的返回值、产物中的位置和测试结果，必须来自相应工具或独立实验。
+但模型不能凭命名决定某条调用已经发生，也不能替代分析器读取目标字节。它对分支、协议与错误原因的解释，仍是需要核对的假设。实际消息形状、观察到的返回值、产物中的位置和测试结果，必须来自相应工具或独立实验。
 
 | 参与者 | 在调查中承担什么 | 不能自动保证什么 |
 | --- | --- | --- |
@@ -112,17 +96,35 @@ RAG 通常帮助从已有资料中检索相关内容。这里的关键区别是�
 
 以下名称依据本专题固定的 `d13c9f84` 源码与文档，用来理解功能家族。它们不是 npm 6.4.0 的逐项发布清单，也不是已通过本机验证的安装教程。
 
-| 要回答的问题 | 代表入口 | 得到什么、仍缺什么 |
-| --- | --- | --- |
-| 产物中有哪些 JS 模块与静态关系？ | `analyze_javascript_application` | 结构图、语义关系、来源和未知；不是应用执行轨迹 |
-| 某个字符串或 IPC 功能连接哪些模块？ | `trace_application_feature`、`trace_javascript_semantics` | 指定图中的可达关系；可达不等于执行 |
-| 两版应用的有关实现有什么变化？ | `compare_application_versions`、`compare_source_to_bundle` | 有依据的匹配、差异和缺口；弱匹配不是语义等价 |
-| 原生函数有哪些指令、调用和引用？ | `open_binary`、`analyze_function` | Provider 的分析记录；需要另行准备支持该目标的引擎 |
-| 当前页面实际暴露了哪些脚本或事件？ | `inspect_web_page`、`observe_web_session` | 授权 CDP 目标和观察窗口内的信息；不回溯 attach 前活动 |
-| 已保存的网络捕获里有什么？ | `inspect_web_network_capture` | 历史文件中的记录；不访问记录里的 URL，也不启动代理监听 |
-| 一次命令执行做了什么？ | `capture_process_scenario`、`compare_process_captures` | 声明场景中的终端、退出和选定观察；实际执行目标，不是安全沙箱 |
-| APK 或 .NET 程序集包含什么？ | `inspect_android_package`、`inspect_managed_artifact` | 各自格式的结构与代码信息；APK 不等于通用 JVM，CIL 不等于 native 实现 |
-| 结论还有哪些没有证据支持？ | `record_unknown`、`verify_reconstruction` | 明确的未知和有限声明验证；不是一句全局“重建成功” |
+#### 先定位 JavaScript 产物与功能关系
+
+`analyze_javascript_application` 建立结构图与语义关系；`trace_application_feature`、`trace_javascript_semantics` 帮助沿选定字符串或功能继续查询。
+
+得到的是有来源的静态候选与未知，**不是应用执行轨迹**。图中可达，不等于当前操作已经走过。
+
+#### 再比较版本或核对发布包
+
+`compare_application_versions` 比较应用版本；`compare_source_to_bundle` 核对源码与 bundle 的候选对应。
+
+比较结果必须带着匹配依据、覆盖和缺口阅读。弱路径匹配或结构相似，**不自动证明语义等价**。
+
+#### 进入原生函数与特定格式
+
+`open_binary`、`analyze_function` 提供所选 Provider 的函数、指令、调用与引用材料，需要另行准备适用的引擎。
+
+`inspect_android_package` 与 `inspect_managed_artifact` 分别处理 APK 和 .NET 程序集。APK 不是通用 JVM 分析，CIL 也不等于 native 实现；不要把不同载体混成一个反编译入口。
+
+#### 区分当前观察、历史记录与主动执行
+
+`inspect_web_page`、`observe_web_session` 取得授权 CDP 目标在选定窗口内的信息，不回溯 attach 之前的活动。`inspect_web_network_capture` 读取历史捕获文件，不访问记录里的 URL，也不启动代理监听。
+
+`capture_process_scenario`、`compare_process_captures` 则涉及目标命令与声明场景：前者会实际执行目标，不能当成安全沙箱。三个方向的权限、生命周期与材料含义不同。
+
+#### 把未知与验收留在调查记录里
+
+`record_unknown` 记录尚无依据的部分；`verify_reconstruction` 检查有限的行为或结构声明。
+
+它们帮助写清“还缺什么”与“哪些条件通过”，**不提供一句全局的‘重建成功’保证**。
 
 进一步阅读：[JS 工作流](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/javascript-application-workflows.md)、[原生调查](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/native-investigation.md)、[浏览器观察](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/browser-observation.md)、[历史网络捕获](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/web-network-captures.md)、[.NET 分析](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/managed-code-analysis.md)。
 
@@ -143,7 +145,7 @@ RAG 通常帮助从已有资料中检索相关内容。这里的关键区别是�
 
 这些范围可以分别核对：[Go](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/go-binaries.md)、[SQLite](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/sqlite-databases.md)、[WASM](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/wasm-artifacts.md)、[固件](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/firmware-analysis.md)、[EVM](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/evm-bytecode.md)、[录制 crash](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/recorded-crashes.md)。
 
-第一次学习不需要把它们全部安装。导出案例若没有 WASM、固件或 EVM 边界，就不必调用这些工具；如果问题后来落到 SQLite 配置或一个 native 组件，再选择能回答该问题的路径。功能广度与某次任务的最小工具集应该分开。
+第一次学习不需要把它们全部安装。任务没有涉及 WASM、固件或 EVM 边界，就不必调用这些工具；若调查后来落到 SQLite 配置或一个 native 组件，再选择能回答该问题的路径。功能广度与某次任务的最小工具集应该分开。
 
 ## 哪种问题值得用
 
@@ -151,4 +153,4 @@ RAG 通常帮助从已有资料中检索相关内容。这里的关键区别是�
 
 若问题是“读懂这个已经拥有完整源码的项目”，通常先用代码搜索、构建和测试更直接。REA 自带的工作流说明也要求普通源码架构分析使用常规仓库工具。本专题对 REA 自身的调查就是按这条路径完成的。[工作流的适用范围](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/.agents/skills/reverse-engineer-anything/SKILL.md#L9)
 
-本章的结论是：REA 的价值在于让调查接触真实目标，并把发现变成可继续核查的材料；AI 的价值在于组织和解释这条调查。下一章从源码解释，在“导出为什么变了”这类问题中，一次分析请求怎样变成模型可读的上下文，而不是直接变成正确答案。
+本章的结论是：REA 的价值在于让调查接触真实目标，并把发现变成可继续核查的材料；AI 的价值在于组织和解释这条调查。下一章从源码解释，一次分析请求怎样变成模型可读的上下文，以及为什么材料交付仍不等于答案正确。

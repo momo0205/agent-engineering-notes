@@ -41,9 +41,9 @@
 ## Task 5: review and publish
 
 - [x] Read-only final factual review of result excerpts, version bounds and experimental claims.
-- [ ] Run website tests, content scan, internal-link check, lint, typecheck, experiment checks and production build.
-- [ ] Package/save/deploy the same verified source commit through Sites. Preserve public audience and existing domain.
-- [ ] Push that commit to existing GitHub main non-force, fast-forward the primary checkout only if safe, and confirm deployment and CI results.
+- [x] Run website tests, content scan, internal-link check, lint, typecheck, experiment checks and production build.
+- [x] Package/save/deploy the same verified source commit through Sites. Preserve public audience and existing domain.
+- [x] Push that commit to existing GitHub main non-force, fast-forward the primary checkout only if safe, and confirm deployment and CI results.
 
 ## Execution rulings and evidence
 
@@ -54,3 +54,5 @@ The real comparison was deliberately kept conservative: summary 0/0/0/1 unknown,
 Adding public examples and chapter cross-links exposed two delivery gaps. Ruling: include examples in the existing public scanner and validate only the finite registered REA chapter set against its content and page, rather than allowing arbitrary dynamic URLs. Both changes had observed red-to-green tests. Offline positive fixture tests join npm verify; REA itself is not installed in CI.
 
 Final read-only review found one raw-output publication risk in tutorial root paths. Corrected all analysis/request/comparison output to ignored rea-output paths; git check-ignore confirms all four paths. Current browser QA renders the real walkthrough and at 390 pixels has no page-level horizontal overflow. Full publication checks and deployment remain the final gate.
+
+Completion receipt: source commit 1e92fb5 passed 235 website tests and production build, with ten positive fixture cases, scans, lint and typecheck also passing. Sites version 20 deployed successfully; the custom-domain experiment page was checked, GitHub main was updated non-force, CI succeeded, and the primary checkout fast-forwarded preserving unrelated untracked state. A final directory-label correction aligns the research index with the completed JS experiment and still-pending native work; it follows the same validation and publication workflow.

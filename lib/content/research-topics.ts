@@ -29,9 +29,9 @@ export const researchTopicGroups: readonly ResearchTopicGroup[] = [
       {
         href: "/topics/rea",
         title: "REA 工具与逆向工程",
-        summary: "分析 AI、MCP 与真实软件调查的分工，沿源码检查证据和能力边界。",
+        summary: "理解 AI 辅助逆向，结合源码与真实小样本，检查工具输出、模型解释和行为验证。",
         tags: ["REA", "reverse engineering", "MCP", "反编译", "二进制", "工具", "JavaScript"],
-        progress: "首轮源码审查 · 实跑待完成",
+        progress: "最小 JS 实跑完成 · 原生实验待完成",
       },
     ],
   },

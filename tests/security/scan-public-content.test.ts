@@ -15,6 +15,7 @@ describe("public content secret scanner", () => {
       "app",
       "components",
       "docs",
+      "examples",
       "public",
       "README.md",
       "HANDOFF.md",
@@ -210,6 +211,18 @@ describe("public content secret scanner", () => {
 
     expect(collectPublicFiles(root)).toEqual([
       "docs/review/release.md",
+    ]);
+  });
+
+  it("includes reproducible examples but not local experiment outputs", () => {
+    const root = mkdtempSync(join(tmpdir(), "public-scan-"));
+    mkdirSync(join(root, "examples", "rea-export-investigation"), { recursive: true });
+    mkdirSync(join(root, "rea-output"));
+    writeFileSync(join(root, "examples", "rea-export-investigation", "README.md"), "safe");
+    writeFileSync(join(root, "rea-output", "raw.json"), "private local capture");
+
+    expect(collectPublicFiles(root)).toEqual([
+      "examples/rea-export-investigation/README.md",
     ]);
   });
 });

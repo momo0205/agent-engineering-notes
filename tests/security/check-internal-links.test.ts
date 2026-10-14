@@ -75,6 +75,22 @@ describe("public internal link checker", () => {
     expect(checkLinks(["app/page.tsx"], root)).toEqual([]);
   });
 
+  it("accepts only registered REA chapter routes with both content and a page", () => {
+    const root = fixture();
+    mkdirSync(join(root, "app", "topics", "rea", "[chapter]"), { recursive: true });
+    mkdirSync(join(root, "lib", "content"), { recursive: true });
+    mkdirSync(join(root, "content", "topics", "rea"), { recursive: true });
+    writeFileSync(join(root, "app", "topics", "rea", "[chapter]", "page.tsx"), "export default function Page() {};");
+    writeFileSync(join(root, "lib", "content", "rea-topic.ts"), 'export const reaChapters = [{ slug: "hands-on" }, { slug: "missing-content" }];');
+    writeFileSync(join(root, "content", "topics", "rea", "hands-on.md"), "# Tutorial");
+    writeFileSync(join(root, "content", "topics", "rea", "unregistered.md"), "# Not registered");
+
+    expect(localTargetExists("content/source.md", "/topics/rea/hands-on#experiment", root)).toBe(true);
+    expect(localTargetExists("content/source.md", "/topics/rea/typo", root)).toBe(false);
+    expect(localTargetExists("content/source.md", "/topics/rea/unregistered", root)).toBe(false);
+    expect(localTargetExists("content/source.md", "/topics/rea/missing-content", root)).toBe(false);
+  });
+
   it("reports failures without absolute filesystem paths", () => {
     const root = fixture();
     writeFileSync(join(root, "content", "source.md"), "[bad](missing.md)");

@@ -1,6 +1,137 @@
-## 先声明这份教程的状态
+## 从一条真实的最小调查链开始
 
-下面是一份依据[发布版 6.4.0](https://github.com/morluto/rea/tree/a56f7bb668ab23fec8d33f7af353ac7ed2fe1895)接口整理的学习实验。我们尚未在本机执行这些步骤；文中的观察目标和验收条件是预期，不是运行报告。后续实跑应追加原始版本、命令、结果和失败记录。
+2026-10-14，我们实际运行了自有 JavaScript 导出样本的 REA 6.4.0 分析、返回形状比较和五项行为验收。本章先交付这份实跑记录，再保留原先的 normalize 入门练习与原生实验设计。后两部分没有因为新实验完成而自动变成已验证教程。
+
+这里最重要的不是让一个很小的函数看起来难，而是看清四件事：工具实际返回了什么；模型怎样使用这些材料；测试提供了什么额外依据；环境失败和残留未知怎样影响结论。
+
+## 实跑目标：取消为什么被当成成功
+
+样本收录在[网站仓库的 examples/rea-export-investigation](https://github.com/momo0205/agent-engineering-notes/tree/main/examples/rea-export-investigation)，包含 baseline、defective、candidate 和统一测试。它模拟导出结果处理，不含 Electron、真实 IPC、UI 或文件写入。`bridge.invoke` 是依赖注入的接口，测试提供可控替身。
+
+两版的 `app.mjs` 相同：
+
+```javascript
+import { presentExportResult } from "./present.mjs";
+
+export async function exportReport(bridge, document) {
+  const result = await bridge.invoke("report:export", { document });
+  return presentExportResult(result);
+}
+```
+
+正确版的 `present.mjs` 对取消、错误和成功分别处理。缺陷版故意漏掉取消分支：
+
+```javascript
+// defective/present.mjs：故意保留的实验缺陷，不是推荐实现。
+export function presentExportResult(result) {
+  if (result.error) return { status: "failed", message: result.error };
+  return { status: "success", message: "Exported" };
+}
+```
+
+我们在分析前已经知道样本源码、故障和预期，并先冻结了行为测试。因此这是已知答案的白盒工作流演示，不是盲测，不是恢复未知闭源应用，也不能用来评价模型的独立逆向正确率。
+
+## 实际运行环境与一次失败
+
+运行包为 `rea-agents@6.4.0`，没有给本实验配置模型 API Key，也没有修改 Agent client 的 MCP 设置。终端曾因工作目录切换用到不支持的 Node 25.6.0，随后固定到已有的 Node 22.22.2；REA 支持的是文档声明的版本分支，不是任意“更高版本”。
+
+Mac 原环境执行分析时返回 `execution_failure`。diagnostics 指向 `xcrun swiftc` 编译进程所有权 helper 失败，包含 `SwiftBridging` 重定义及 SDK/compiler 不兼容提示。选择已有的另一份 SDK 后仍失败。本轮没有修复或替换 Command Line Tools，也没有跳过进程所有权保护。
+
+我们保留了这次错误中的 `partial_observation`：它绑定了样本 digest，但图覆盖不完整。不能从里面的空关系或零计数推断这个程序没有有关行为，也不能把错误结果当作成功分析。这是 Mac 环境的真实失败记录，不代表所有 Mac 都会失败。
+
+随后使用已有 OrbStack，启动一次性 Linux arm64 容器，只读挂载这几份自有样本。镜像是 `node:22.22.2-bookworm-slim`，镜像 digest 为 `sha256:9f6d5975c7dca860947d3915877f85607946403fc55349f39b4bc3688448bb6e`；容器中准备 procps 后执行同一固定 npm 包。两次分析均以 0 退出。容器只用于解决兼容性问题，不是 REA 自动提供的隔离服务。
+
+正常环境中的分析命令如下，实际容器内目标分别为 `/lab/baseline` 与 `/lab/defective`：
+
+```bash
+mkdir -p rea-output
+npx --yes rea-agents@6.4.0 analyze-javascript-application \
+  "$PWD/examples/rea-export-investigation/baseline" --json \
+  > rea-output/baseline-analysis.json
+
+npx --yes rea-agents@6.4.0 analyze-javascript-application \
+  "$PWD/examples/rea-export-investigation/defective" --json \
+  > rea-output/defective-analysis.json
+```
+
+完整容器重现命令在样本 README 中。首次取包和准备容器需要网络；静态分析本身不执行样本，也不请求一个真实导出服务。仓库将 `rea-output/` 忽略，原始分析、请求与比较输出统一放在这里，避免直接混入文章提交；公开前仍需人工审核，gitignore 不是脱敏机制。
+
+## 第一次读输出：不要把解析成功当成全部理解
+
+| 实际结果 | baseline | defective |
+| --- | --- | --- |
+| 目标 digest 前缀 | `159a2d43` | `d949214a` |
+| 已解析 JavaScript 文件 | 2 | 2 |
+| 解析失败 | 0 | 0 |
+| 结构图节点 / 边 | 7 / 8 | 7 / 8 |
+| 结构图 coverage | complete | complete |
+| 语义图节点 / 关系 | 42 / 26 | 38 / 24 |
+| 语义 unknown 数量 | 14 | 13 |
+| 语义 coverage | unknown | unknown |
+
+两版的 `app.mjs`、导入与导出等结构材料可以被定位，但仅凭上述数量看不出哪个输入触发错误。完整结构覆盖也没有消除语义中的动态调用、未知值与歧义。这正是继续选择一项聚焦查询的理由，而不是让模型宣布“完整调用链已恢复”。
+
+## 第二步：聚焦返回形状，工具没有直接替我们下结论
+
+我们从已保存的两份完整 Evidence 构造比较请求，精确指定 `present.mjs` 与 `presentExportResult`。这是对原始 JSON 的机械包装，不修改 Evidence 内容：
+
+```bash
+jq -n --slurpfile left rea-output/baseline-analysis.json \
+  --slurpfile right rea-output/defective-analysis.json \
+  '{left:$left[0],right:$right[0],
+    left_module_path:"present.mjs",left_export_name:"presentExportResult",
+    right_module_path:"present.mjs",right_export_name:"presentExportResult"}' \
+  > rea-output/shape-request.json
+
+npx --yes rea-agents@6.4.0 compare-javascript-export-shapes \
+  rea-output/shape-request.json --json > rea-output/shapes.json
+```
+
+这项比较实际在 Mac 上完成，消费 Linux 已产生的 Evidence，不重新启动解析工作进程。结果 `added/removed/changed` 都是 0，但 `unknown` 是 1、coverage 为 partial，并定位到 baseline 的 `present.mjs` 第 2 行。两个返回 variant 配对，一个左侧 variant 未配对。
+
+它给出的原因是缺少两侧互相唯一对应的字面量判别依据，而不是“软件没变化”。这个输出不能直接宣称取消分支已被工具证明删除；但它把调查聚焦到一个可核查的返回位置。第三章对[这个真实 unknown 的含义](/topics/rea/evidence-and-validation)作了详细解释。
+
+## AI 在这一次到底做了什么
+
+本轮参与的是当前撰写专题的 Agent，经终端工具运行 REA、读取结果并核对来源，没有新增一次 live 模型 API 调用，也不是通过 REA MCP 进行的宿主循环测试。它事先知道自制样本的答案，不能把这一轮描述成独立发现未知缺陷。
+
+为了让过程可检查，可以把公开调查摘要写成四个阶段，而不是倾倒模型的中间推理文本：
+
+| 阶段 | 本次采取的行动 | 依据或限制 |
+| --- | --- | --- |
+| 取得材料 | 保留 Mac 错误，再在 Linux 得到两份分析 Evidence | 失败不得当成完整成功；目标字节保持一致 |
+| 缩小范围 | 精确比较返回处理函数，而不是浏览全部工具 | 两版结构计数相同，聚焦问题涉及的输出边界 |
+| 解释材料 | 将未配对位置与样本源码、已知契约对照 | `unknown` 是线索，源码阅读与已知答案也是解释依据 |
+| 验证候选 | 保留故障版，另写 candidate 并运行冻结的测试 | 用行为结果验收，不修改预期迁就实现 |
+
+模型的辅助在于组织查询、读懂错误与覆盖、连接位置和规范、生成候选。包解析、哈希和静态比较由 REA 完成；行为差异由 Node 测试取得。这个样本没有证明 REA 更快、模型比人工更强，或者大模型可以取代独立验收。
+
+## 第三步：同一套测试怎样区分三个版本
+
+在网站仓库根目录运行：
+
+```bash
+REA_LAB_TARGET=baseline node --test examples/rea-export-investigation/verify-export.mjs
+REA_LAB_TARGET=defective node --test examples/rea-export-investigation/verify-export.mjs
+REA_LAB_TARGET=candidate node --test examples/rea-export-investigation/verify-export.mjs
+```
+
+| 冻结的验收条件 | baseline | defective | candidate |
+| --- | --- | --- | --- |
+| 完成结果映射为 success | 通过 | 通过 | 通过 |
+| `{ canceled: true }` 映射为 idle | 通过 | **失败：得到 success** | 通过 |
+| 显式错误映射为 failed | 通过 | 通过 | 通过 |
+| bridge 收到约定 channel 与 payload | 通过 | 通过 | 通过 |
+| backend Promise 拒绝仍为拒绝 | 通过 | 通过 | 通过 |
+| 实际通过 / 失败 | 5 / 0 | 4 / 1 | 5 / 0 |
+
+缺陷版退出码 1 是实验预期，不是要掩盖的 CI 故障。candidate 没有修改缺陷版，而是在独立模块中先处理 canceled，再处理 error，最后成功返回。它通过了同一组测试，但这只证明五个声明；没有验证真实 IPC、UI、文件写入、任意输入形状或完整 Electron 行为。
+
+这份实验的有限结论是：REA 能在此次 Linux 环境中取得目标绑定的静态材料，并给出带未知的精确返回形状比较；Agent 可以将其与其他材料组合；冻结的行为探针能区分这个已知缺陷与候选修复。它还不是闭源逆向能力或工程提效的评测。
+
+## 后续入门练习的状态
+
+下面的 normalize 练习依据[发布版 6.4.0](https://github.com/morluto/rea/tree/a56f7bb668ab23fec8d33f7af353ac7ed2fe1895)接口整理，仍是待执行的独立练习。不要把它与上面的实际导出记录混为一份结果。
 
 第一步选静态 JavaScript，便于把注意力放在证据上。它只需要相应 Node.js/npm 环境，不需要先装 Hopper、Ghidra 或 IDA。发布项目要求 Node.js 22.x 至少 22.19、24.x 至少 24.11，或 26+。在专用学习目录里使用固定包版本。[发布版安装说明](https://github.com/morluto/rea/blob/a56f7bb668ab23fec8d33f7af353ac7ed2fe1895/docs/installation.md)
 

@@ -22,7 +22,7 @@ REA 的 Evidence 契约包含 subject 的 SHA-256、provider/version、analysis 
 
 ## confidence 不是“有多大概率正确”
 
-REA 的 `confidence` 只有三个类别：
+REA 顶层 Evidence 的 `confidence` 有三个类别；图内观察的 `confidence` 属于另一套契约，不能混读：
 
 | 类别 | 阅读时应该追问 |
 | --- | --- |
@@ -31,6 +31,8 @@ REA 的 `confidence` 只有三个类别：
 | inferred | 推断用了哪些假设，还有哪些解释？ |
 
 这些类别不提供概率校准或统计正确率。静态 JavaScript 图可以是从发布产物派生的结果，但不因此变成对运行时行为的观察。本网站的 [Jev 概率研究](/topics/jev)讨论另一种数值输出，两者不能混用。[confidence 与 authority 的定义](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/domain/evidence.ts#L98)
+
+例如本轮实跑的 Evidence 顶层为 `derived`，其中部分 AST 观察为 `exact`。后者表达该观察在相应图契约内的身份与来源强度，不是概率值，也不会把整份静态分析提升为运行时事实。
 
 还要区分 `confidence` 与 `authority`：前者描述 observed、derived、inferred 的类别，后者帮助辨别发布产物、运行观察或其他来源。同一句“返回 canceled”如果来自静态候选、一次实际运行或模型解释，证据意义不同。不能只摘出一个字段，省略来源和 limitations 后说“工具确认了”。
 
@@ -65,6 +67,30 @@ REA 的 unknown 契约包含记录、修订和 resolution 校验。`update_unkno
 REA 能保留完整证据，并通过摘要和后续视图交付较大结果。需要分别检查原始分析的覆盖范围、服务保留的集合和模型实际读取的内容。分页的 `exhausted` 只表示当前查询窗口到达该集合末尾；它不证明前页已经读过，也不覆盖同一记录的其他视图。[页窗口的计算](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/domain/analysisView/analysisViewCoverage.ts#L14)
 
 如果解析失败、图被资源限制截断，或运行时只观察了某个场景，即使模型读完所有页，也不能把“没有看到”改成“确定不存在”。transport 响应预算、producer 的分析覆盖、模型实际读取的上下文，应分别检查。[MCP 的保留结果与交付边界](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/mcp-contracts.md#L71)
+
+## 实跑对照：零个 changed 为什么不是没有变化
+
+本轮对两份完整导出样本 Evidence 调用了发布版 `compare-javascript-export-shapes`，精确选择两侧 `present.mjs` 的 `presentExportResult`。下列片段从实际 `normalized_result` 摘取，只显示有关字段，不是可直接导入的完整 Evidence：
+
+```json
+{
+  "summary": { "added": 0, "removed": 0, "changed": 0, "unknown": 1 },
+  "coverage": {
+    "status": "partial",
+    "paired_variants": 2,
+    "unpaired_left_variants": 1,
+    "unpaired_right_variants": 0
+  }
+}
+```
+
+输出将正确版中 `present.mjs` 第 2 行的一个返回 variant 保留为未配对，理由是没有 reciprocal unique literal discriminant，也就是没有能在两侧互相唯一对应的字面量判别依据。其他两项返回 variant 得到了配对。它并没有将这个未知自动归类为 removed，更没有直接诊断“取消 bug”。
+
+写作 Agent 核对该来源位置与样本源码，解释“缺陷版缺少取消状态处理”。行为证据则来自事先固定的独立 Node 探针：同一个 `{ canceled: true }` 输入，正确版返回 idle，缺陷版返回 success。这个样本和故障原本就是我们设计的，不能说 REA 首次发现了未知 bug。完整命令、样本和五项验收在[实践章](/topics/rea/hands-on)。
+
+如果只把 `changed: 0` 摘出来，报告就会得出错误的“没有变化”；如果把 `unknown: 1` 改写成工具已经证明删除，则夸大了静态结果。真正有用的调查是保留未知、定位相关材料，再提出能区分解释的实验。
+
+同样，缺陷版的 unknown 数量比正确版少一个，不能当成质量提升或工具更确定。代码少了一个分支，也可能让需要表达的事实和未知一起减少。计数必须和范围、内容及验收一起阅读。
 
 ## 重建怎样才算通过验证
 

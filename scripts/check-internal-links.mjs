@@ -42,6 +42,32 @@ function targetCandidates(source, pathname, root) {
   return [target, resolve(target, "index.html"), `${target}.md`, `${target}.mdx`];
 }
 
+// REA uses a finite registered chapter set, not an arbitrary dynamic URL.
+// Read its literal registry without importing or executing application code.
+function reaChapterTargetExists(pathname, root) {
+  const match = /^\/topics\/rea\/([a-z0-9-]+)\/?$/.exec(pathname);
+  if (!match) return false;
+  const slug = match[1];
+  const registryPath = resolve(root, "lib/content/rea-topic.ts");
+  const pageDirectory = resolve(root, "app/topics/rea/[chapter]");
+  if (!existsAsFile(registryPath)
+    || !existsAsFile(resolve(root, "content/topics/rea", `${slug}.md`))
+    || !appPageExtensions.some((extension) => existsAsFile(resolve(pageDirectory, `page${extension}`)))) return false;
+
+  const registry = ts.createSourceFile(registryPath, readFileSync(registryPath, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  return registry.statements.some((statement) => ts.isVariableStatement(statement)
+    && statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+    && statement.declarationList.declarations.some((declaration) => ts.isIdentifier(declaration.name)
+      && declaration.name.text === "reaChapters"
+      && declaration.initializer && ts.isArrayLiteralExpression(declaration.initializer)
+      && declaration.initializer.elements.some((element) => ts.isObjectLiteralExpression(element)
+        && element.properties.some((property) => ts.isPropertyAssignment(property)
+          && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))
+          && property.name.text === "slug"
+          && ts.isStringLiteral(property.initializer)
+          && property.initializer.text === slug))));
+}
+
 export function localTargetExists(source, rawTarget, root = process.cwd()) {
   const unwrapped = rawTarget.trim().replace(/^<|>$/g, "");
   if (!unwrapped || unwrapped.startsWith("#") || unwrapped.startsWith("//")) return true;
@@ -60,7 +86,7 @@ export function localTargetExists(source, rawTarget, root = process.cwd()) {
   const candidates = targetCandidates(source, pathname, root);
   const boundary = pathname.startsWith("/") ? resolve(root) : publicBoundary(source, root);
   if (candidates.some((candidate) => !isWithin(candidate, boundary))) return false;
-  return candidates.some(existsAsFile);
+  return candidates.some(existsAsFile) || reaChapterTargetExists(pathname, root);
 }
 
 function isUnsafeLocalTarget(source, rawTarget, root) {

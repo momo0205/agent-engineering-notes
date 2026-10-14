@@ -33,13 +33,13 @@ export default async function ReaChapterPage({ params }: Props) {
       </header>
       <section className="jev-chapter-evidence" aria-label="研究证据摘要">
         <dl>
-          <div><dt>研究状态</dt><dd>源码研究</dd></div>
-          <div><dt>证据类型</dt><dd>源码与测试设计 · 工程判断</dd></div>
+          <div><dt>研究状态</dt><dd>源码研究 + 最小 JS 实跑</dd></div>
+          <div><dt>证据类型</dt><dd>源码 · 小样本 CLI 与行为对照 · 工程判断</dd></div>
           <div><dt>源码版本</dt><dd><a href={`https://github.com/morluto/rea/tree/${reaRevision}`}><code>{reaRevision.slice(0, 8)}</code></a></dd></div>
           <div><dt>最近审查</dt><dd>{reaReviewedAt}</dd></div>
           <div><dt>内容更新</dt><dd>{reaUpdatedAt}</dd></div>
         </dl>
-        <p role="status">已完成首轮源码审查；教程与外部分析引擎尚未本机实跑。发布版 6.4.0 与审查的 main 源码分别标注。</p>
+        <p role="status">已完成最小 JavaScript CLI 分析与行为对照；外部原生分析引擎尚未本机实跑。实际小样本、待执行练习与固定源码分别标注。</p>
       </section>
       <ArticleBody html={renderMarkdown(chapter.body)} />
       <nav className="topic-note" aria-label="章节导航">

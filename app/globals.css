@@ -271,6 +271,15 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
 .rea-reading-body .rea-diagram--pipeline .rea-diagram-connector { top: auto; bottom: -22px; left: 22px; right: auto; transform: rotate(90deg); }
 .rea-reading-body .rea-diagram-outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 14px 0 0; padding: 0; list-style: none; }
 .rea-reading-body .rea-diagram-outcomes li { margin: 0; padding: 10px 12px; border: 1px solid #d6dbe1; border-radius: 8px; background: #f8f9f8; color: #505e6d; font-size: 12px; line-height: 1.7; }
+.rea-reading-body .rea-pairing-table { overflow: hidden; border-radius: 10px; background: #fafbf9; table-layout: fixed; }
+.rea-reading-body .rea-pairing-table th, .rea-reading-body .rea-pairing-table td { padding: 13px 14px; }
+.rea-reading-body .rea-pairing-table tr:last-child td { background: #eee5d8; }
+.rea-reading-body .rea-pairing-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.rea-reading-body .rea-pairing-summary li { margin: 0; padding: 10px 12px; border: 1px solid #d5dbe3; border-radius: 8px; font-family: var(--font-mono); font-size: 11px; color: #566375; }
+.rea-reading-body .rea-pairing-summary strong { display: block; font-family: var(--font-mono); font-size: 22px; font-weight: 550; }
+.rea-reading-body .rea-pairing-summary li:last-child { background: #eee5d8; border-color: #dbcbb6; }
+.rea-reading-body .rea-diagram--data-flow .rea-diagram-flow { display: grid; gap: 12px; }
+.rea-reading-body .rea-diagram--data-flow .rea-diagram-step { padding: 17px 20px; }
 @media (max-width: 760px) {
   .rea-reading-body .rea-diagram { padding: 21px; }
   .rea-reading-body .rea-diagram-heading { display: block; }
@@ -286,6 +295,8 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-
   .rea-reading-body .rea-diagram--pipeline .rea-diagram-number { margin: 3px 12px 0 0; }
   .rea-reading-body .rea-diagram-outcomes { grid-template-columns: 1fr; }
   .rea-reading-body th, .rea-reading-body td { padding: 14px 16px; }
+  .rea-reading-body .rea-pairing-table th, .rea-reading-body .rea-pairing-table td { padding: 11px 8px; font-size: 12px; }
+  .rea-reading-body .rea-pairing-summary { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
   .rea-reading-body .rea-table-columns-3::before,

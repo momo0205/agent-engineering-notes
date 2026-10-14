@@ -1,5 +1,7 @@
 ## 工程价值取决于缺少哪类信息
 
+读到这里，工具怎样取得材料、材料怎样支持结论已经分开。本章转向采用之前的问题：在你的工作里，哪一类缺口值得准备这些能力？先读场景与交付物；需要查工具名时，再进入章末的能力参考。
+
 对有源码的日常后端开发，代码搜索、测试和已有诊断工具通常已经足够。REA 更值得关注的时刻，是关键事实在发布文件、闭源本地库或实际运行中，而没有完整地出现在当前仓库里。
 
 下面是基于已审查能力提出的工程应用判断，尚未在我们的项目里验证效率收益。采用前应选一个具体问题，让工具输出和独立验证可以一一对应。
@@ -101,3 +103,48 @@ Java 服务可能通过 JNI/JNA 调用本地库，也可能启动一个闭源转
 如果以后比较人工与 Agent 调查，可以固定同一问题、目标和停止条件，分别记录准备时间、查询次数、实际有效发现、错误解释、未解决项和人工复核成本。单次成功演示不适合直接推广成普遍效率数字。本章提出的是可以落地的任务设计；下一章用自有小样本先练习取证、解释和验证。
 
 实践章另外保留了一个[最小导出样本实跑](/topics/rea/hands-on)：真实静态分析保留了 unknown，同一行为测试复现取消被当成成功，独立候选通过了有限验收。它只是可控的结果处理练习，不是上面六类工程场景的完成报告，也不是完整 Electron 调用链。
+
+## 深入参考：按调查问题选择工具
+
+下面承接第一章后移的工具地图。它供查证与任务准备使用，不要求首次阅读逐项记忆。名称依据固定 `d13c9f84` 源码与文档，不是 npm 6.4.0 的逐项发布清单，更不是本专题已经实跑的功能清单。实际安装时要核对 release 与 schema；工具出现在列表里，不代表引擎可用。
+
+### JavaScript 产物与功能关系
+
+`analyze_javascript_application` 建立结构图与语义关系；`trace_application_feature`、`trace_javascript_semantics` 沿选定字符串或功能继续查询。得到的是有来源的静态候选与未知，不是应用执行轨迹。支持的目录或 ASAR、解析覆盖和动态边界都要一起记录。
+
+`compare_application_versions` 比较应用版本；`compare_source_to_bundle` 核对源码与 bundle 的候选对应。比较必须带着匹配依据、覆盖和缺口阅读。弱路径匹配或结构相似，不自动证明语义等价。[JS 工作流与比较规则](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/javascript-application-workflows.md)
+
+### 原生函数、Android 与 .NET
+
+`open_binary`、`analyze_function` 提供所选 Provider 的汇编、伪代码、调用与引用材料，需要准备适用的 Hopper、Ghidra 或 IDA 及其目标格式、架构和许可。它们不是同一个引擎的不同名字。
+
+`inspect_android_package` 与 `inspect_managed_artifact` 分别处理 APK 和 .NET 程序集。APK 不是通用 JVM 服务分析，PE/CLI metadata 与 CIL 也不等于 native 或 managed runtime 的全部实现。[原生调查](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/native-investigation.md)、[.NET 范围](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/managed-code-analysis.md)
+
+### 当前观察、历史记录与主动执行
+
+`inspect_web_page`、`observe_web_session` 取得授权 CDP 目标在选定窗口内的信息，不回溯 attach 前活动。`inspect_web_network_capture` 读取历史捕获文件，不访问记录中的 URL，也不启动代理监听。
+
+同样是浏览器路径，被动连接既有浏览器，与主动启动、驱动交互场景也不同。REA 将 CDP/V8 观察与 Playwright 场景能力区分；后者涉及浏览器启动或操作，权限、生命周期与证据来源不能按被动 attach 来理解。按选定路径核对实际可用性，不把它们笼统概括成“能操作网站”。
+
+`capture_process_scenario`、`compare_process_captures` 则涉及目标命令和声明场景：前者会实际执行目标，不能当成安全沙箱。浏览器、包、资源和保存捕获都要核对具体载体、工具版本与读取范围。[浏览器观察](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/browser-observation.md)、[历史网络捕获](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/web-network-captures.md)
+
+### 未知与有限验收
+
+`record_unknown` 记录尚无依据的部分；`verify_reconstruction` 检查有限的行为或结构声明。它们帮助写清“还缺什么”和“哪些条件通过”，不提供一句全局的“重建成功”保证。[工具契约与可用性](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/mcp-contracts.md#L285)
+
+### 还有哪些专用载体
+
+这些路径说明同一工具系统可以连接不同检查能力，而不是任何文件都能交给同一个反编译器。下列内容仍是固定 main 的源码能力地图；本轮没有安装或实跑这些引擎。
+
+| 载体与入口 | 能回答的问题 | 关键边界与准备 |
+| --- | --- | --- |
+| Go：`inspect_go_binary` | 嵌入的 Go 版本、模块、替换与构建设置 | 不执行目标，不恢复完整源码；未嵌入的设置保持未知 |
+| SQLite：`inspect_sqlite_database` | 选定 schema 与表数据怎样组织 | 需要静止或一致快照；该路径有单独的、更高 Node 版本要求 |
+| WASM：`inspect_wasm_artifact` | section、import/export 与解码后的 WAT | 调用方准备 WABT；不执行 WASM，WAT 不是原始源码 |
+| 固件：`inspect_firmware_regions` / `extract_firmware` | 区域与明确选定的提取内容 | 准备 Binwalk/Unblob 及依赖；第一阶段核验为 Linux x64。会运行外部提取器并写新目录，但不执行提取出的目标 |
+| EVM：`inspect_evm_interface` | 本地字节码的 interface 候选 | 离线推断，不查询链、不操作钱包；候选不是已验证源码 ABI |
+| 已录制 crash：`inspect_recorded_crash` | 支持的 core 中记录的线程、寄存器和信号 | 限定格式与外部依赖；历史 PID 不等于 live attach 授权 |
+
+可以分别核对：[Go](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/go-binaries.md)、[SQLite](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/sqlite-databases.md)、[WASM](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/wasm-artifacts.md)、[固件](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/firmware-analysis.md)、[EVM](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/evm-bytecode.md)、[录制 crash](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/recorded-crashes.md)。
+
+功能广度和一次任务的最小工具集应该分开。先选需要的材料，再准备能取得它的路径；不要为了“支持得全”把所有引擎和高权限观察器一起开放给模型。

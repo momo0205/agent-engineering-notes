@@ -17,11 +17,11 @@ function decorateReaTables(html: string): string {
 
 export function ArticleBody({ html, profile = "default" }: ArticleBodyProps) {
   if (profile === "rea") {
-    const sections = html.split(/(<p>\[rea-diagram:(?:roles|pipeline|verification)\]<\/p>)/g);
+    const sections = html.split(/(<p>\[rea-diagram:(?:roles|pipeline|verification|pairing|data-flow)\]<\/p>)/g);
     return (
       <article className="article-body rea-reading-body">
         {sections.map((section, index) => {
-          const diagram = section.match(/^<p>\[rea-diagram:(roles|pipeline|verification)\]<\/p>$/);
+          const diagram = section.match(/^<p>\[rea-diagram:(roles|pipeline|verification|pairing|data-flow)\]<\/p>$/);
           return diagram
             ? <ReaDiagram key={index} kind={diagram[1] as ReaDiagramKind} />
             : section.trim() ? <div key={index} className="rea-prose-fragment" dangerouslySetInnerHTML={{ __html: decorateReaTables(section) }} /> : null;

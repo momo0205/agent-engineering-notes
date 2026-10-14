@@ -1,5 +1,7 @@
 ## 报告首先要回答“这个结论来自哪里”
 
+本章要解决的是一个实际阅读困难：工具已经交回很多数据，怎样判断模型接下来的解释有没有越界？先用普通语言区分材料和结论，再看 Evidence 字段、unknown 规则以及真实比较输出。
+
 逆向分析容易产生看起来很合理的解释：字符串像接口名，两个函数名称相似，某次运行恰好出现了预期结果。要继续验证，必须能回到具体文件、地址、工具版本、请求参数和观察范围。
 
 REA 的 Evidence 契约包含 subject 的 SHA-256、provider/version、analysis profile、operation/parameters、原始与归一化结果、locations、limitations 和证据引用。它为追查提供结构；结论是否正确，还需要检查产生这些数据的过程。[Evidence schema](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/domain/evidence.ts#L113)
@@ -42,6 +44,8 @@ REA 顶层 Evidence 的 `confidence` 有三个类别；图内观察的 `confiden
 
 `authenticatedEvidence` 会重新计算规范化内容的标识并检查是否匹配。源码实现的是内容与 ID 的一致性检查，没有把这条记录变成独立第三方签名或事实认证。
 
+换句话说，拿当前内容重算标识并对上，说明两者自洽；如果内容和标识一起被替换，单靠这一步并没有外部可信锚点。因此不能将它写成“保证记录从未被篡改”。文件哈希与预先可信的参考值比较，可以帮助识别字节是否变化；可信参考从哪里来，是另外一个问题。
+
 因此，一个完全自洽的错误观察仍可能拥有正确哈希。文件哈希能绑定目标字节，不能证明伪代码准确、模型理解正确，或某次有限观察覆盖了全部行为。[标识检查源码](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/src/domain/evidence.ts#L161)
 
 ## unknown 是分析结果的一部分
@@ -72,7 +76,13 @@ REA 能保留完整证据，并通过摘要和后续视图交付较大结果。�
 
 ## 实跑对照：零个 changed 为什么不是没有变化
 
-本轮对两份完整导出样本 Evidence 调用了发布版 `compare-javascript-export-shapes`，精确选择两侧 `present.mjs` 的 `presentExportResult`。下列片段从实际 `normalized_result` 摘取，只显示有关字段，不是可直接导入的完整 Evidence：
+先把“返回形状”理解为一个函数可能交出的结果对象具有哪些字段、分支和字面量状态。比较需要建立两侧的对应关系；没有足够依据时，不能靠名字相似或“看起来应该对应”强行匹配。
+
+本轮对两份完整导出样本 Evidence 调用了发布版 `compare-javascript-export-shapes`，精确选择两侧 `present.mjs` 的 `presentExportResult`。先用配对示意建立直觉，再看原始结果中的字段。
+
+[rea-diagram:pairing]
+
+下面的 JSON 片段从实际 `normalized_result` 摘取，只显示有关字段，不是可直接导入的完整 Evidence：
 
 ```json
 {
@@ -93,6 +103,8 @@ REA 能保留完整证据，并通过摘要和后续视图交付较大结果。�
 如果只把 `changed: 0` 摘出来，报告就会得出错误的“没有变化”；如果把 `unknown: 1` 改写成工具已经证明删除，则夸大了静态结果。真正有用的调查是保留未知、定位相关材料，再提出能区分解释的实验。
 
 同样，缺陷版的 unknown 数量比正确版少一个，不能当成质量提升或工具更确定。代码少了一个分支，也可能让需要表达的事实和未知一起减少。计数必须和范围、内容及验收一起阅读。
+
+这组数字本身并不误导；误读发生在读者跳过 `unknown` 和 `coverage`，或把人工核对得出的解释归功于工具已经证明。配对图帮助理解这个实例，不将其提升为整个专题的真实应用案例。
 
 ## 重建怎样才算通过验证
 

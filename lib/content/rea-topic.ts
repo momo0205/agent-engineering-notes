@@ -20,12 +20,12 @@ export type ReaChapter = {
 };
 
 export const reaChapters: readonly ReaChapter[] = [
-  { slug: "what-is-rea", order: "01", title: "REA 到底解决什么问题", summary: "直说 AI 辅助逆向的定位，展开功能地图，比较人、普通 Agent 与 REA 工具链的分工。", readingMinutes: 18, body: whatIsRea },
-  { slug: "source-architecture", order: "02", title: "沿源码走一次分析请求", summary: "从实际 JS 输出回到契约、图与上下文，再学习原生函数的汇编、伪代码和引用调查路径。", readingMinutes: 21, body: sourceArchitecture },
-  { slug: "evidence-and-validation", order: "03", title: "证据、推断与未知", summary: "结合真实 unknown 比较，区分观察、解释、因果与覆盖，说明为什么零个 changed 不等于没变化。", readingMinutes: 16, body: evidenceAndValidation },
-  { slug: "engineering-use-cases", order: "04", title: "工程师可以怎样用", summary: "按发布产物、Electron、SDK、CLI 与网络场景，明确调查步骤、交付物、验收和停止条件。", readingMinutes: 13, body: engineeringUseCases },
-  { slug: "hands-on", order: "05", title: "从自有产物开始实践", summary: "真实记录 Mac 失败、Linux 分析、返回形状 unknown 与三版行为验收，再给出可复现命令和后续练习。", readingMinutes: 32, body: handsOn },
-  { slug: "integration-and-boundaries", order: "06", title: "能力边界与接入判断", summary: "把版本、平台、权限、数据流与预算落到任务，判断什么时候接入、什么时候保留现有工具。", readingMinutes: 12, body: integrationAndBoundaries },
+  { slug: "what-is-rea", order: "01", title: "REA 到底解决什么问题", summary: "从软件调查中的缺失事实出发，建立 REA、AI 与验证的整体认识，再进入源码和实践。", readingMinutes: 12, body: whatIsRea },
+  { slug: "source-architecture", order: "02", title: "沿源码走一次分析请求", summary: "先理解请求怎样成为证据，再沿真实文件、代码与状态边界逐层深入。", readingMinutes: 24, body: sourceArchitecture },
+  { slug: "evidence-and-validation", order: "03", title: "证据、推断与未知", summary: "从材料与结论的区别，深入 confidence、哈希、真实形状配对与独立验收。", readingMinutes: 19, body: evidenceAndValidation },
+  { slug: "engineering-use-cases", order: "04", title: "工程师可以怎样用", summary: "先按场景判断工程价值，再查阅工具家族、专用载体和采用前提。", readingMinutes: 20, body: engineeringUseCases },
+  { slug: "hands-on", order: "05", title: "从自有产物开始实践", summary: "从纯 Node 行为对照开始，复查真实 REA 记录，再用任务书和报告模板组织实践。", readingMinutes: 37, body: handsOn },
+  { slug: "integration-and-boundaries", order: "06", title: "能力边界与接入判断", summary: "分别确认版本、三条数据流与操作权限，用明确的接入契约决定是否采用。", readingMinutes: 14, body: integrationAndBoundaries },
 ];
 
 export function reaChapter(slug: string): ReaChapter | undefined {

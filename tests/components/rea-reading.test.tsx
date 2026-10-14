@@ -24,6 +24,8 @@ describe("REA reading profile", () => {
     ["roles", "分工图：宿主 Agent、REA 与分析工具"],
     ["pipeline", "流程图：分析请求怎样成为可读取的证据"],
     ["verification", "验证图：观察、假设与独立验收"],
+    ["pairing", "配对图：返回形状中的匹配与未知"],
+    ["data-flow", "数据流图：目标分析、模型请求与公开报告"],
   ])("renders the registered %s diagram between its surrounding paragraphs", (kind, name) => {
     render(<ArticleBody profile="rea" html={renderMarkdown(
       `前面的说明。\n\n[rea-diagram:${kind}]\n\n后面的说明。`,

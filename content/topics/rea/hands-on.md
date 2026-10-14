@@ -4,6 +4,28 @@
 
 这里最重要的不是让一个很小的函数看起来难，而是看清四件事：工具实际返回了什么；模型怎样使用这些材料；测试提供了什么额外依据；环境失败和残留未知怎样影响结论。
 
+## 怎样使用这一章
+
+如果只想先建立手感，先跑下面的纯 Node 行为测试，再回到分析记录。若要复现 REA 输出，继续阅读环境、完整分析命令与返回形状比较；若要让 Agent 参与，使用后面的任务书。原生引擎与完整应用实验仍是后续练习，不混进这次已完成记录。
+
+### 先用最少依赖复现行为差异
+
+从公开网站仓库取得自有样本；首次 clone 需要网络。下面只运行 Node 自带测试，不要求安装网站依赖、不调用 REA，也不需要模型 API Key。原实验固定使用 Node 22.22.2。
+
+```bash
+git clone https://github.com/momo0205/agent-engineering-notes.git
+cd agent-engineering-notes
+node --version
+
+REA_LAB_TARGET=baseline node --test examples/rea-export-investigation/verify-export.mjs
+REA_LAB_TARGET=defective node --test examples/rea-export-investigation/verify-export.mjs
+REA_LAB_TARGET=candidate node --test examples/rea-export-investigation/verify-export.mjs
+```
+
+逐条运行，不要用 `&&` 把三个目标连成一条：中间故障版应该失败，串联会让最后一版不再运行。预期是 baseline 五项通过、defective 四项通过且取消测试失败、candidate 五项通过。这个检查确认样本契约和故障仍可复现，**不意味着 REA 分析也已经完成**。
+
+后续运行 REA 需要取得固定 npm 包并满足该路径的环境要求。Mac 原分析失败与 Linux 容器成功的记录都保留在下文；完整容器重现命令见[样本 README](https://github.com/momo0205/agent-engineering-notes/tree/main/examples/rea-export-investigation)。遇到相同环境错误，应保留错误与部分观察，不修改保护逻辑来追求成功输出。
+
 ## 实跑目标：取消为什么被当成成功
 
 样本收录在[网站仓库的 examples/rea-export-investigation](https://github.com/momo0205/agent-engineering-notes/tree/main/examples/rea-export-investigation)，包含 baseline、defective、candidate 和统一测试。它模拟导出结果处理，不含 Electron、真实 IPC、UI 或文件写入。`bridge.invoke` 是依赖注入的接口，测试提供可控替身。
@@ -137,7 +159,7 @@ REA_LAB_TARGET=candidate node --test examples/rea-export-investigation/verify-ex
 
 ## 学习顺序与每一步的产出
 
-前面四章用 Electron 导出问题串起调查。但第一次练习不应该同时承担 Electron、运行时观察、native 引擎和模型配置的全部环境成本。先用两个小文件，把“工具取得什么、模型解释什么、测试证明什么”分清，再回到跨进程案例。
+前面四章分别建立了工具定位、源码流程、证据判断和工程用途。第一次练习不应同时承担 Electron、运行时观察、native 引擎和模型配置的全部环境成本。先用两个小文件，把“工具取得什么、模型解释什么、测试证明什么”分清；是否进入跨进程或其他完整应用，再由后续选题决定。
 
 | 阶段 | 练习目标 | 应留下的东西 |
 | --- | --- | --- |
@@ -146,7 +168,7 @@ REA_LAB_TARGET=candidate node --test examples/rea-export-investigation/verify-ex
 | 候选实现 | 把解释变成可测试的小接口 | 独立文件与已声明输入契约 |
 | 独立验证 | 区分真实符合与自我确认 | 测试、失败输入、修订结论 |
 | 原生进阶 | 在编译产物上调查有已知真值的函数 | 编译配置、引擎与证据、有限对照结果 |
-| 跨进程案例 | 最后调查成功、取消、失败等分支 | 行为矩阵、观察范围、仍未关闭的义务 |
+| 完整应用（后续选题） | 选择授权目标与可验收功能，再准备相应工具 | 行为矩阵、观察范围、仍未关闭的义务 |
 
 完成第一项不要求模型 API Key。需要模型时使用你已经配置的宿主；需要原生引擎时再单独安装并核对平台。这里没有让网站服务器代替本机执行分析，也没有自动改动读者的现有 Agent 系统。
 
@@ -283,3 +305,45 @@ node --test rea-lab/tests/normalize.test.mjs
 公开摘要可以按“问题 → 目标 → 方法 → 有依据的发现 → 反例 → 未知 → 有限结论”来写。源码审查、工具实跑、真实引擎测试和模型调查分别标记。这样后续换版本或修正解释，不会把原本不同强度的材料合成一个无法复查的成功故事。
 
 不要把真实源码、终端响应或捕获文件直接贴到公开网站。原始资料可以留在学习工作目录，公开文章用人工核查后的片段和汇总。运行在本地的 REA 仍可能把工具结果交给远端模型；数据流需要按照实际宿主确认，第六章会继续讨论这个边界。
+
+## 给协作 Agent 的任务书：先约定依据，再让它调查
+
+人的问题需要先被解释清楚；交给 Agent 时，还需要把目标、权限、预期交付物和停止条件写成不会互相冲突的约定。下面是供人修改后交给协作 Agent 的**研究任务模板**，不是 REA 的 MCP 请求格式，不应作为参数 JSON 直接提交给工具。
+
+```text
+研究类型：已知答案的白盒入门练习，不是盲测。
+目标：网站仓库 examples/rea-export-investigation 中的自有样本。
+版本：REA CLI 固定为 rea-agents@6.4.0；记录实际 Node 与系统版本。
+
+先做：
+1. 说明样本行为契约，运行原有测试并保留完整退出状态。
+2. 固定待分析的 baseline / defective，记录实际目标 digest。
+3. 分别保存完整分析记录，再比较指定返回函数。
+4. 将工具观察、源码核对和推断分开，解释 unknown 与 coverage。
+
+允许：读取这些样本；按已确认方案使用分析工具；写独立 candidate。
+禁止：改 baseline / defective 或原验收来迁就结果；扩大目标范围。
+执行、联网、创建输出目录的范围由使用者事先确认，不自行升级权限。
+
+验收：原始缺陷仍能复现；候选接受同一组冻结测试。
+停止：出现环境或权限缺口时，先报告已有观察与缺少的条件。
+报告：问题、目标/版本、实际命令、观察、解释、反证、未知、有限结论。
+```
+
+如果将来要研究真正未知的产物，需要另行设计盲测：不要把参考源码、真值或故障提示同时塞给候选调查者。当前模板故意明确白盒身份，避免把看过答案之后的正确解释写成独立逆向能力。
+
+### 一份能复查的报告，最少要回答什么
+
+报告不必泄露模型的中间推理过程。公开、可核查的行动摘要更有用：做了什么查询，依据是什么，哪些解释仍未确定，独立检查的结果如何。
+
+```text
+问题与范围：本次只判断什么，明确不判断什么？
+目标身份：实际 digest、REA release/commit、平台与引擎是什么？
+操作记录：运行了哪些命令，退出状态和原始记录在哪里？
+工具观察：引用哪条 Evidence、哪个位置、哪些 coverage/limitations？
+人工或模型解释：用了什么额外材料，还有哪些替代解释？
+独立验收：哪些固定输入通过，哪些失败，判断依据来自哪里？
+结论与未知：已回答哪项问题，剩余缺口是什么？
+```
+
+保留原始记录，不代表公开这些记录。网站文章应使用审核后的片段；如给另一 Agent 继续研究，先确认交付对象和允许传递的数据范围。

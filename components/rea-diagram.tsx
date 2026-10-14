@@ -1,4 +1,4 @@
-export type ReaDiagramKind = "roles" | "pipeline" | "verification";
+export type ReaDiagramKind = "roles" | "pipeline" | "verification" | "pairing" | "data-flow";
 
 type DiagramStep = { title: string; detail: string; tone: "blue" | "green" | "warm" };
 type Diagram = {
@@ -9,9 +9,10 @@ type Diagram = {
   steps: DiagramStep[];
   note: string;
   caption: string;
+  connectedSteps?: boolean;
 };
 
-const diagrams: Record<ReaDiagramKind, Diagram> = {
+const diagrams: Record<Exclude<ReaDiagramKind, "pairing">, Diagram> = {
   roles: {
     number: "01", label: "分工图：宿主 Agent、REA 与分析工具", title: "AI 组织调查，工具接触目标",
     introduction: "读图方向：从调查意图走向实际目标。观察结果沿工具链返回，而不是由模型补齐。",
@@ -49,6 +50,18 @@ const diagrams: Record<ReaDiagramKind, Diagram> = {
     note: "验收依据：参考结果或规范应与候选解释区分，不能只用模型自己生成的预期来确认自己。",
     caption: "图 03 · 方法与结果边界。失败应修正解释；证据不足保留 unknown；通过也只覆盖已声明条件。",
   },
+  "data-flow": {
+    number: "05", label: "数据流图：目标分析、模型请求与公开报告", title: "三条数据流，分别确认边界",
+    introduction: "下面是三个独立检查面，不是一条承诺全程本地的流水线。",
+    steps: [
+      { title: "目标文件 → 实际分析引擎", detail: "确认解析器或引擎在哪里运行、是否联网，以及目标字节是否离开本机。", tone: "green" },
+      { title: "工具结果 → 宿主 → 模型请求", detail: "远端模型可能收到字符串、伪代码与路径；检查实际发送内容和提供方数据政策。", tone: "blue" },
+      { title: "研究记录 → 公开报告", detail: "公开前审查原始输出、截图与引用；JSON 和 gitignore 都不会自动脱敏。", tone: "warm" },
+    ],
+    connectedSteps: false,
+    note: "第一条留在本地，不能推出第二条和第三条也留在本地。",
+    caption: "图 05 · 按实际配置核查的三类数据边界示意，不是本轮新增的网络流量实测。",
+  },
 };
 
 function Connector() {
@@ -56,6 +69,23 @@ function Connector() {
 }
 
 export function ReaDiagram({ kind }: { kind: ReaDiagramKind }) {
+  if (kind === "pairing") {
+    return <figure className="rea-diagram rea-diagram--pairing" aria-label="配对图：返回形状中的匹配与未知">
+      <div className="rea-diagram-heading"><span>FIG. 04</span><strong>配不上对，不等于已证明删除</strong></div>
+      <p className="rea-diagram-introduction">根据样本源码与实际比较整理的示意：两个 variant 已配对，一个左侧 variant 保留为未知。</p>
+      <table className="rea-pairing-table" aria-label="两版返回形状的配对示意">
+        <thead><tr><th scope="col">正确版</th><th scope="col">缺陷版</th><th scope="col">比较结果</th></tr></thead>
+        <tbody>
+          <tr><td>成功<br /><code>success</code></td><td>成功<br /><code>success</code></td><td>配对</td></tr>
+          <tr><td>失败<br /><code>failed</code></td><td>失败<br /><code>failed</code></td><td>配对</td></tr>
+          <tr><td>取消<br /><code>idle</code></td><td>无确定对应</td><td><code>unknown</code></td></tr>
+        </tbody>
+      </table>
+      <ul className="rea-pairing-summary" aria-label="实际比较摘要"><li>added <strong>0</strong></li><li>removed <strong>0</strong></li><li>changed <strong>0</strong></li><li>unknown <strong>1</strong></li></ul>
+      <p className="rea-diagram-note">未配对的依据不足，不能直接改写为 removed；同样也不能只读三个零就宣称没有变化。</p>
+      <figcaption>图 04 · 配对示意不等于运行轨迹，也不表示工具独立发现了取消故障。行为差异由样本源码和冻结测试另行核对。</figcaption>
+    </figure>;
+  }
   const diagram = diagrams[kind];
   return (
     <figure className={`rea-diagram rea-diagram--${kind}`} aria-label={diagram.label}>
@@ -65,7 +95,7 @@ export function ReaDiagram({ kind }: { kind: ReaDiagramKind }) {
         {diagram.steps.map((step, index) => <li className={`rea-diagram-step rea-diagram-step--${step.tone}`} key={step.title}>
           <span className="rea-diagram-number">{String(index + 1).padStart(2, "0")}</span>
           <strong>{step.title}</strong><p>{step.detail}</p>
-          {index < diagram.steps.length - 1 ? <Connector /> : null}
+          {diagram.connectedSteps !== false && index < diagram.steps.length - 1 ? <Connector /> : null}
         </li>)}
       </ol>
       <p className="rea-diagram-note">{diagram.note}</p>

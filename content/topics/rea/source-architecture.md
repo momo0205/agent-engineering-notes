@@ -1,5 +1,7 @@
 ## 从一次请求理解系统
 
+第一章回答了“为什么需要工具材料”。这一章接着追问：一项用户请求进入 REA 后，谁检查输入、谁读取目标、谁保留记录，模型最后拿到了什么？读完应能沿文件定位这几个责任，而不是只记住分层名称。
+
 为了看清源码，先选择一条不依赖原生反编译器的路径：`analyze_javascript_application`。它接收本地 JavaScript/Electron 目录或 ASAR，建立结构和语义关系，再形成 Evidence。这里讨论的是固定 `d13c9f84` 的实现，没有把代码阅读写成运行成功。
 
 项目的[架构图](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/docs/architecture.mermaid)大致可以按 Java 工程师熟悉的分层理解：入口适配器处理 CLI/MCP，application 层组织工作流，domain 层表达证据与分析关系，provider 和 bridge 负责连接实际工具。composition 层集中装配这些依赖。
@@ -7,6 +9,8 @@
 [rea-diagram:pipeline]
 
 图中的分析器不是大模型。源码中建立关系、校验对象和计算身份的流程可以在没有模型参与时完成。大模型在图外，通过宿主选择入口、读结果和提出下一步。
+
+如果熟悉后端开发，可以先把入口视为适配协议的 Controller，把 application 视为组织用例的 Service，把 provider 视为外部能力适配层。这只是帮助理解的类比，不是 REA 中这些层真的按 Java 框架运行。接下来要核对的仍是实际 TypeScript 实现。
 
 ## 第一层：把协议请求交给工作流
 
@@ -58,6 +62,29 @@ return detail === "summary" && analyzed.ok
 
 完整数据流因此是：用户给出目标和问题 → 宿主选择工具 → MCP 契约校验请求 → 服务读取与解析产物 → 建立关系图并保留未知 → 结果校验及 Evidence 封装 → 模型读取证据并继续查询 → 用实际样本验证最终解释或实现。
 
+### 深读时怎样建立源码索引
+
+下面是人工整理的阅读索引，不是额外的 REA 配置或完整执行栈。它适合让读者或协作 Agent 逐项定位；真正调用时仍以所用版本的 schema 为准。
+
+```text
+协议与输入边界
+  src/server/registerElectronTools.ts
+  src/contracts/sessionToolContracts.ts
+          ↓
+JavaScript 用例与失败处理
+  src/application/javascript/JavaScriptApplicationService.ts
+          ↓
+工作进程与语法解析
+  src/composition/javascriptAnalysisWorkerProcess.ts
+  src/domain/javascript/javascriptSourceParser.ts
+          ↓
+证据封装与通用结构
+  src/application/javascript/JavaScriptApplicationEvidence.ts
+  src/domain/evidence.ts
+```
+
+阅读时为每个文件留下三条笔记：它接收哪类输入；返回或保留什么；在哪些条件下失败或保持未知。不要把索引里的顺序扩写成每个分支都必经的调用轨迹，也不要把省略的内部调用当成不存在。
+
 ### 用一次真实小样本检查这条链
 
 2026-10-14 的自有导出样本实跑使用发布版 6.4.0 CLI，不是 MCP。正确版与缺陷版都包含 `app.mjs`、`present.mjs` 两个文件。Linux 环境中的两次分析均正常退出，结果分别保留目标 digest、`analyze_javascript_application` 操作、`derived` 类别和 `shipped-artifact` 来源。
@@ -83,6 +110,12 @@ CLI 一条命令对应一个独立进程，下一次命令不能直接依赖上�
 snapshot 也不是“把反编译器所有状态完整存起来”。它复用符合目标字节、操作、参数、provider 和配置要求的结果；游标相关操作和变更不按普通精确结果缓存。源码明确区分保留观察与 provider 数据库。缓存命中可能节省重复分析，但旧观察不能悄悄成为新目标的事实。
 
 因此，一个调用 REA 的 Agent 至少应该知道自己正调查哪个目标、处在哪个会话、用的是新分析还是保存记录、下一步是否仍有对应 provider。否则“模型的对话上下文还在”也不能保证工具状态仍然有效。
+
+### MCP、Skill、Harness 与 RAG 放在哪一层
+
+这几个名字容易让人误以为系统提供了四套相同能力。MCP 是宿主取得工具结果的协议；Skill 是组织调查的工作流说明；Harness 是推进模型与工具循环的宿主运行环境。只安装 REA 的 Skill，不等于分析服务和引擎已经可用。[Skill 与工具的区分](https://github.com/morluto/rea/blob/d13c9f840d36a321a56917e75c48afcb8d72920e/.agents/skills/reverse-engineer-anything/SKILL.md#L16)
+
+RAG 通常从已有资料中检索相关内容；REA 的关键路径还会对指定产物执行分析，生成新的目标绑定记录。两者可以组合，但文档检索不是当前安装包的运行观察，关系图也不自动意味着已经具备向量检索、长期记忆或完整上下文管理。
 
 ## 原生引擎为什么另设 Provider
 

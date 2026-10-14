@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- vinext does not provide next/link */
 import { notFound } from "next/navigation";
 import { ArticleBody } from "../../../../components/article-body";
-import { reaChapter, reaChapters, reaReviewedAt, reaRevision } from "../../../../lib/content/rea-topic";
+import { reaChapter, reaChapters, reaReviewedAt, reaUpdatedAt, reaRevision } from "../../../../lib/content/rea-topic";
 import { renderMarkdown } from "../../../../lib/content/markdown-renderer";
 
 type Props = { params: Promise<{ chapter: string }> };
@@ -37,6 +37,7 @@ export default async function ReaChapterPage({ params }: Props) {
           <div><dt>证据类型</dt><dd>源码与测试设计 · 工程判断</dd></div>
           <div><dt>源码版本</dt><dd><a href={`https://github.com/morluto/rea/tree/${reaRevision}`}><code>{reaRevision.slice(0, 8)}</code></a></dd></div>
           <div><dt>最近审查</dt><dd>{reaReviewedAt}</dd></div>
+          <div><dt>内容更新</dt><dd>{reaUpdatedAt}</dd></div>
         </dl>
         <p role="status">已完成首轮源码审查；教程与外部分析引擎尚未本机实跑。发布版 6.4.0 与审查的 main 源码分别标注。</p>
       </section>

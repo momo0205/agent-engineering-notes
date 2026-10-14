@@ -20,3 +20,17 @@ Chapter evidence state:
 Excluded from claimed validation: running REA, analysis engines, target applications, real devices or live model APIs; measuring engineering productivity; reproducing vendor showcases. These remain future experiments and are stated in the reader-facing pages.
 
 Required publication checks are the full website test suite, public-content scan, internal-link check, lint, typecheck and production build. The Sites source workflow must complete these checks before pushing and packaging the candidate. This review record does not itself claim a deployment outcome.
+
+## 2026-10-14 content expansion
+
+The owner requested substantially more detail and a clearer line connecting features, engineering applications and LLM responsibilities. The bounded update preserves the six chapter routes and existing visual design. A fictional, explicitly labeled Electron export-cancellation investigation connects the chapters; it is not a claim of a reproduced defect.
+
+The expansion adds a question-oriented feature map; separates model, Harness, MCP, Skill, RAG and analysis responsibilities; follows contracts, graphs, retained Evidence and context through CLI/MCP state boundaries; distinguishes evidence from causal interpretation; turns application ideas into inputs, investigation steps and acceptance conditions; and expands the staged tutorial with oracle separation and failure review. Adoption guidance covers data flow, prompt-injection risks, platform requirements, permissions and cost. Existing project integrations are discussed only as responsibility boundaries, not implemented or re-audited.
+
+Source claims remain pinned to the 2026-10-13 audit revisions above. The content-update date is separate from the source-review date. All tutorials and engine/runtime experiments remain unexecuted. Tutorial commands use the published 6.4.0 baseline; the expanded main-source inventory is explicitly not a release capability list.
+
+This is prose and presentation-metadata refinement, with no new routes, search behavior, tool integration or execution service. No new tests are added solely to lock article wording; the existing route/rendering tests and full publication checks validate the unchanged content delivery boundary. Final factual review and publication results are recorded only after they actually run.
+
+A fresh-context, read-only reviewer completed the expanded-content audit against both pinned source trees. No Critical or Important findings remained. The review checked the tutorial flags, source links and six additional carrier families; one Minor ambiguity in the firmware table was corrected to distinguish running external extractors from executing extracted target programs. The reviewer explicitly did not judge real-engine execution, website deployment or other projects' integration feasibility.
+
+Local browser QA confirmed the expanded six-chapter overview, chapter metadata, Markdown headings, tables and tutorial code blocks. A 390-pixel viewport check found no page-level horizontal overflow on the functionality chapter; the temporary viewport override was reset. These are website presentation checks, not validation of the REA tutorial itself. Final publication still requires the ordered website checks and build before packaging.

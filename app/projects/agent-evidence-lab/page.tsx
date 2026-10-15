@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { evidenceLabBasePath, evidenceLabChapters, evidenceLabReviewedAt, evidenceLabRevision } from "../../../lib/content/evidence-lab";
 
 export const metadata: Metadata = {
   title: "Agent Evidence Lab",
@@ -13,7 +14,7 @@ export default function ProjectPage() {
         <p className="eyebrow">Current project</p>
         <h1>Agent Evidence Lab</h1>
         <p>做一个“研究 Agent 的 Agent”，理解机制，追溯证据，形成自己的研发判断。</p>
-        <p>状态核对：<time dateTime="2026-10-14">2026-10-14</time></p>
+        <p>状态核对：<time dateTime={evidenceLabReviewedAt}>{evidenceLabReviewedAt}</time> · 已合并实现 {evidenceLabRevision}</p>
       </header>
 
       <section className="project-status" aria-labelledby="project-status-title">
@@ -25,6 +26,18 @@ export default function ProjectPage() {
         <div className="evidence-block">
           <strong>可读、可追溯、可保存</strong>
           <p>最新完整原文复核已验证保存与重启复用；小样本和固定任务的结果不能外推为生产可靠性。</p>
+        </div>
+      </section>
+
+      <section className="topic-map" aria-labelledby="research-reading-title">
+        <div className="section-heading"><h2 id="research-reading-title">从问题走向机制，再走向证据</h2><span>6 章 · 由浅入深</span></div>
+        <p>先理解为什么研究 Agent，再沿一条真实研究链路看实现。每章从具体问题出发，结合图解、对照表、代码示意与源码索引，说明机制、取舍和适用边界。</p>
+        <div className="topic-grid">
+          {evidenceLabChapters.map((chapter) => <article key={chapter.slug}>
+            <p>{chapter.order} · {chapter.readingMinutes} 分钟</p>
+            <h3><a href={`${evidenceLabBasePath}/${chapter.slug}`}>{chapter.title}</a></h3>
+            <p>{chapter.summary}</p><a href={`${evidenceLabBasePath}/${chapter.slug}`} aria-label={`阅读：${chapter.title}`}>阅读章节 →</a>
+          </article>)}
         </div>
       </section>
 
@@ -126,7 +139,7 @@ export default function ProjectPage() {
             <li>工程文章、官方文档、论文等其他来源的接入。</li>
             <li>通用受控实验与 CPU、内存、网络、命令等沙箱边界。</li>
             <li>全面语义质量评测与系统性安全验证。</li>
-            <li>备份恢复演练与服务器长期部署。</li>
+            <li>恢复后的应用接入、异机恢复与服务器长期部署。本地隔离数据库逻辑恢复已有单次演练记录；最新补充报告对应的数据恢复仍需验证。</li>
           </ul>
           <p>完整 M4/M5 和“研究 Agent 的 Agent”产品目标仍未完成；当前成果是有明确验收范围的本机研究切片。</p>
         </section>
@@ -136,7 +149,7 @@ export default function ProjectPage() {
           <p>
             已认可的下一方向，是先补一条小而完整的深度研究链路：从一个具体工程问题出发，
             识别现有证据的缺口，再在受控范围内追读必要材料，形成机制解释、代码与模型分工、可借鉴做法和未知边界。
-            这个方向尚未实施。
+            在本专题核对的已合并基线中，这个方向尚未实施；后续开发与验收将按版本追加。
           </p>
           <p>拟议验收目标：</p>
           <ol>

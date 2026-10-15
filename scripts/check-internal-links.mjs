@@ -42,30 +42,38 @@ function targetCandidates(source, pathname, root) {
   return [target, resolve(target, "index.html"), `${target}.md`, `${target}.mdx`];
 }
 
-// REA uses a finite registered chapter set, not an arbitrary dynamic URL.
-// Read its literal registry without importing or executing application code.
-function reaChapterTargetExists(pathname, root) {
-  const match = /^\/topics\/rea\/([a-z0-9-]+)\/?$/.exec(pathname);
-  if (!match) return false;
-  const slug = match[1];
-  const registryPath = resolve(root, "lib/content/rea-topic.ts");
-  const pageDirectory = resolve(root, "app/topics/rea/[chapter]");
+// Only these finite chapter registries are supported. Parse literal slugs;
+// never execute application code or accept an arbitrary dynamic route.
+function registeredChapterTargetExists(pathname, root) {
+  const registries = [
+    { prefix: "/topics/rea/", registry: "lib/content/rea-topic.ts", variable: "reaChapters", content: "content/topics/rea", page: "app/topics/rea/[chapter]" },
+    { prefix: "/projects/agent-evidence-lab/", registry: "lib/content/evidence-lab.ts", variable: "evidenceLabChapters", content: "content/projects/agent-evidence-lab", page: "app/projects/agent-evidence-lab/[chapter]" },
+  ];
+  const entry = registries.find((item) => pathname.startsWith(item.prefix));
+  if (!entry) return false;
+  const slug = pathname.slice(entry.prefix.length).replace(/\/$/, "");
+  if (!/^[a-z0-9-]+$/.test(slug)) return false;
+  const registryPath = resolve(root, entry.registry);
+  const pageDirectory = resolve(root, entry.page);
   if (!existsAsFile(registryPath)
-    || !existsAsFile(resolve(root, "content/topics/rea", `${slug}.md`))
+    || !existsAsFile(resolve(root, entry.content, `${slug}.md`))
     || !appPageExtensions.some((extension) => existsAsFile(resolve(pageDirectory, `page${extension}`)))) return false;
 
   const registry = ts.createSourceFile(registryPath, readFileSync(registryPath, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   return registry.statements.some((statement) => ts.isVariableStatement(statement)
     && statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
     && statement.declarationList.declarations.some((declaration) => ts.isIdentifier(declaration.name)
-      && declaration.name.text === "reaChapters"
-      && declaration.initializer && ts.isArrayLiteralExpression(declaration.initializer)
-      && declaration.initializer.elements.some((element) => ts.isObjectLiteralExpression(element)
+      && declaration.name.text === entry.variable
+      && declaration.initializer
+      && (() => {
+        const value = ts.isAsExpression(declaration.initializer) ? declaration.initializer.expression : declaration.initializer;
+        return ts.isArrayLiteralExpression(value) && value.elements.some((element) => ts.isObjectLiteralExpression(element)
         && element.properties.some((property) => ts.isPropertyAssignment(property)
           && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))
           && property.name.text === "slug"
           && ts.isStringLiteral(property.initializer)
-          && property.initializer.text === slug))));
+          && property.initializer.text === slug));
+      })()));
 }
 
 export function localTargetExists(source, rawTarget, root = process.cwd()) {
@@ -86,7 +94,7 @@ export function localTargetExists(source, rawTarget, root = process.cwd()) {
   const candidates = targetCandidates(source, pathname, root);
   const boundary = pathname.startsWith("/") ? resolve(root) : publicBoundary(source, root);
   if (candidates.some((candidate) => !isWithin(candidate, boundary))) return false;
-  return candidates.some(existsAsFile) || reaChapterTargetExists(pathname, root);
+  return candidates.some(existsAsFile) || registeredChapterTargetExists(pathname, root);
 }
 
 function isUnsafeLocalTarget(source, rawTarget, root) {

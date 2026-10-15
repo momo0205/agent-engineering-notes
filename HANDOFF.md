@@ -1,5 +1,17 @@
 # Handoff
 
+## Agent Evidence Lab six-chapter research guide — 2026-10-15
+
+Owner approved the six-chapter structure and continuation. The existing project URL is the overview; its six child routes progressively explain purpose, persisted research workflow, Loop/Harness, context/tools, evidence/quality and the real source-review case with proposed next work. Content lives in `content/projects/agent-evidence-lab`, with a finite registry in `lib/content/evidence-lab.ts`. The topic directory and sitemap include these routes. Existing article and other project content remains unchanged.
+
+Implementation review is pinned to merged application commit `8afe9f4`. Another application development session has moved to a deeper-research branch; do not silently treat its in-progress work as the published baseline. Future updates should append dated acceptance evidence and update the displayed revision deliberately. Current initial search is deterministic; the default model path selects STOP stance/citations from observed candidates. Saved-source briefing is a separate explicit call; the v0.22.0 sample has zero experiments and title-only sandbox detail remains PARTIAL.
+
+The database restoration wording now distinguishes an older local isolated logical restore recorded in DEPLOYMENT from the 2026-10-14 briefing-data backup, which was checked readable but not restored. Neither proves restored-application access or long-running server deployment.
+
+The six finite diagrams and accessible table wrappers reuse existing reading styles; no style redesign or new dependency. Diagram markers are interpreted only as registered standalone paragraphs after Markdown sanitization. Code and unknown markers remain literal. Per-chapter source indexes use safe logical paths and label pseudocode and proposed contracts. No keys, report IDs, full private source documents or application runtime configuration were copied.
+
+Validation: full verify (250 tests plus 5+5 REA cases), typecheck, changed-file ESLint, link/secret checks and production build pass. Desktop/mobile browser QA covers chapter navigation, diagrams, no page overflow and keyboard horizontal table scrolling. Independent review has no remaining material findings. The existing three unrelated REA overview lint errors remain outside scope; do not claim full-repository lint passed.
+
 ## Agent Evidence Lab project update — 2026-10-14
 
 The existing `/projects/agent-evidence-lab` page now describes the research-Agent goal, code/model responsibilities, verified local capabilities, the saved-source review sample, remaining work and the next problem-driven evidence-reading direction. The next direction is proposed, not implemented. Full M4/M5 and long-running server deployment remain incomplete.

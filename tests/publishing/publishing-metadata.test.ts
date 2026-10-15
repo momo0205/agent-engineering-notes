@@ -147,6 +147,12 @@ describe("publishing metadata", () => {
       { url: "https://notes.example.com/topics/rea/hands-on" },
       { url: "https://notes.example.com/topics/rea/integration-and-boundaries" },
       { url: "https://notes.example.com/projects/agent-evidence-lab" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/why-research-agents" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/research-pipeline" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/loop-and-harness" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/context-and-tools" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/evidence-and-quality" },
+      { url: "https://notes.example.com/projects/agent-evidence-lab/case-and-next-step" },
       { url: "https://notes.example.com/about" },
       {
         url: "https://notes.example.com/articles/visible-note",

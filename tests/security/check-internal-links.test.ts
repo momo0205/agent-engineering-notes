@@ -91,6 +91,20 @@ describe("public internal link checker", () => {
     expect(localTargetExists("content/source.md", "/topics/rea/missing-content", root)).toBe(false);
   });
 
+  it("accepts only registered Evidence Lab chapters with matching content and route", () => {
+    const root = fixture();
+    mkdirSync(join(root, "app", "projects", "agent-evidence-lab", "[chapter]"), { recursive: true });
+    mkdirSync(join(root, "lib", "content"), { recursive: true });
+    mkdirSync(join(root, "content", "projects", "agent-evidence-lab"), { recursive: true });
+    writeFileSync(join(root, "app", "projects", "agent-evidence-lab", "[chapter]", "page.tsx"), "export default function Page() {};");
+    writeFileSync(join(root, "lib", "content", "evidence-lab.ts"), 'export const evidenceLabChapters = [{ slug: "loop-and-harness" }, { slug: "missing-content" }];');
+    writeFileSync(join(root, "content", "projects", "agent-evidence-lab", "loop-and-harness.md"), "# Loop");
+    writeFileSync(join(root, "content", "projects", "agent-evidence-lab", "unregistered.md"), "# Not registered");
+    expect(localTargetExists("content/source.md", "/projects/agent-evidence-lab/loop-and-harness", root)).toBe(true);
+    expect(localTargetExists("content/source.md", "/projects/agent-evidence-lab/unregistered", root)).toBe(false);
+    expect(localTargetExists("content/source.md", "/projects/agent-evidence-lab/missing-content", root)).toBe(false);
+  });
+
   it("reports failures without absolute filesystem paths", () => {
     const root = fixture();
     writeFileSync(join(root, "content", "source.md"), "[bad](missing.md)");

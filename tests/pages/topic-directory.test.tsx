@@ -20,6 +20,6 @@ describe("research directory", () => {
     fireEvent.change(search, { target: { value: "does-not-match-any-topic" } });
     expect(screen.getByRole("status")).toHaveTextContent("没有找到匹配的专题");
     fireEvent.change(search, { target: { value: "" } });
-    expect(screen.getAllByRole("article")).toHaveLength(4);
+    expect(screen.getAllByRole("article")).toHaveLength(5);
   });
 });

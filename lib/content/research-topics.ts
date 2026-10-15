@@ -20,6 +20,13 @@ export const researchTopicGroups: readonly ResearchTopicGroup[] = [
     summary: "理解宿主怎样推进任务，工具怎样取得事实，以及结果怎样被验证。",
     topics: [
       {
+        href: "/projects/agent-evidence-lab",
+        title: "Agent Evidence Lab",
+        summary: "研究 Agent 的 Agent：沿问题、证据、Loop、上下文与质量验证，理解代码和模型怎样协作。",
+        tags: ["Agent Evidence Lab", "Agent", "研究", "Loop", "证据", "Java", "Spring AI"],
+        progress: "六章研究与实现 · 本机限定验收",
+      },
+      {
         href: "/topics/deepseek-harness",
         title: "DeepSeek Harness",
         summary: "从固定源码理解 Agent Loop、上下文、插件与接入判断。",

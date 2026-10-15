@@ -36,6 +36,12 @@ const STATIC_ROUTES = [
   "/topics/rea/hands-on",
   "/topics/rea/integration-and-boundaries",
   "/projects/agent-evidence-lab",
+  "/projects/agent-evidence-lab/why-research-agents",
+  "/projects/agent-evidence-lab/research-pipeline",
+  "/projects/agent-evidence-lab/loop-and-harness",
+  "/projects/agent-evidence-lab/context-and-tools",
+  "/projects/agent-evidence-lab/evidence-and-quality",
+  "/projects/agent-evidence-lab/case-and-next-step",
   "/about",
 ] as const;
 

@@ -1,8 +1,9 @@
 import { ReaDiagram, type ReaDiagramKind } from "./rea-diagram";
+import { EvidenceLabDiagram, type EvidenceLabDiagramKind } from "./evidence-lab-diagram";
 
 type ArticleBodyProps = {
   html: string;
-  profile?: "default" | "rea";
+  profile?: "default" | "rea" | "evidence-lab";
 };
 
 // This decorates already-sanitized HTML; it never accepts arbitrary diagram code.
@@ -16,6 +17,16 @@ function decorateReaTables(html: string): string {
 }
 
 export function ArticleBody({ html, profile = "default" }: ArticleBodyProps) {
+  if (profile === "evidence-lab") {
+    const sections = html.split(/(<p>\[evidence-lab-diagram:(?:purpose|pipeline|loop|context|validation|deep-research)\]<\/p>)/g);
+    return <article className="article-body rea-reading-body">
+      {sections.map((section, index) => {
+        const diagram = section.match(/^<p>\[evidence-lab-diagram:(purpose|pipeline|loop|context|validation|deep-research)\]<\/p>$/);
+        return diagram ? <EvidenceLabDiagram key={index} kind={diagram[1] as EvidenceLabDiagramKind} />
+          : section.trim() ? <div key={index} className="rea-prose-fragment" dangerouslySetInnerHTML={{ __html: decorateReaTables(section) }} /> : null;
+      })}
+    </article>;
+  }
   if (profile === "rea") {
     const sections = html.split(/(<p>\[rea-diagram:(?:roles|pipeline|verification|pairing|data-flow)\]<\/p>)/g);
     return (
